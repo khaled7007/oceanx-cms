@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { font-family: 'Inter', system-ui, sans-serif; }
+  [dir="rtl"] { font-family: 'Cairo', system-ui, sans-serif; }
+}
+
+/* TipTap editor styles */
+.tiptap-editor {
+  @apply min-h-[200px] focus:outline-none;
+}
+
+.tiptap-editor p { @apply mb-3; }
+.tiptap-editor h1 { @apply text-3xl font-bold mb-4; }
+.tiptap-editor h2 { @apply text-2xl font-bold mb-3; }
+.tiptap-editor h3 { @apply text-xl font-semibold mb-2; }
+.tiptap-editor ul { @apply list-disc pl-6 mb-3; }
+.tiptap-editor ol { @apply list-decimal pl-6 mb-3; }
+.tiptap-editor blockquote { @apply border-l-4 border-brand-500 pl-4 italic text-gray-600 mb-3; }
+.tiptap-editor a { @apply text-brand-600 underline; }
+.tiptap-editor strong { @apply font-bold; }
+.tiptap-editor em { @apply italic; }
+.tiptap-editor u { @apply underline; }
+.tiptap-editor p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply text-gray-400 float-left h-0 pointer-events-none;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { @apply bg-gray-100; }
+::-webkit-scrollbar-thumb { @apply bg-gray-300 rounded-full; }
+::-webkit-scrollbar-thumb:hover { @apply bg-gray-400; }

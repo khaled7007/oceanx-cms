@@ -1,0 +1,6 @@
+import apiClient from './client';
+import { DashboardStats } from '../types';
+
+export const dashboardApi = {
+  getStats: () => apiClient.get<DashboardStats>('/dashboard/stats'),
+};
