@@ -1,34 +1,36 @@
 import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
-
-const titles: Record<string, string> = {
-  '/dashboard': 'Dashboard',
-  '/reports': 'Reports',
-  '/reports/new': 'New Report',
-  '/articles': 'Articles',
-  '/articles/new': 'New Article',
-  '/pages': 'Pages',
-  '/pages/new': 'New Page',
-  '/media': 'Media Library',
-  '/services': 'Services',
-  '/services/new': 'New Service',
-  '/news': 'News',
-  '/news/new': 'New News Item',
-};
-
-function getTitle(pathname: string): string {
-  if (titles[pathname]) return titles[pathname];
-  if (pathname.endsWith('/edit')) {
-    const base = pathname.split('/').slice(0, 2).join('/');
-    const baseTitle = titles[base] || 'Content';
-    return `Edit ${baseTitle.replace(/s$/, '')}`;
-  }
-  return 'OceanX CMS';
-}
+import { useLang } from '../../contexts/LanguageContext';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const { T } = useLang();
+
+  const titles: Record<string, string> = {
+    '/dashboard':    T.nav.dashboard,
+    '/reports':      T.nav.reports,
+    '/reports/new':  `${T.common.new} ${T.nav.reports.replace(/s$/, '')}`,
+    '/articles':     T.nav.articles,
+    '/articles/new': `${T.common.new} ${T.nav.articles.replace(/s$/, '')}`,
+    '/pages':        T.nav.pages,
+    '/pages/new':    `${T.common.new} ${T.nav.pages.replace(/s$/, '')}`,
+    '/media':        T.nav.media,
+    '/services':     T.nav.services,
+    '/services/new': `${T.common.new} ${T.nav.services.replace(/s$/, '')}`,
+    '/news':         T.nav.news,
+    '/news/new':     `${T.common.new} ${T.nav.news.replace(/s$/, '')}`,
+  };
+
+  function getTitle(pathname: string) {
+    if (titles[pathname]) return titles[pathname];
+    if (pathname.endsWith('/edit')) {
+      const base = '/' + pathname.split('/')[1];
+      return `${T.common.edit} — ${titles[base] || ''}`;
+    }
+    return 'OceanX CMS';
+  }
+
   const title = getTitle(location.pathname);
 
   return (

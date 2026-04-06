@@ -8,29 +8,32 @@ import {
   WrenchScrewdriverIcon,
   MegaphoneIcon,
 } from '@heroicons/react/24/outline';
-
-const navItems = [
-  { to: '/dashboard',  label: 'Dashboard',     icon: HomeIcon },
-  { to: '/reports',    label: 'Reports',        icon: DocumentTextIcon },
-  { to: '/articles',   label: 'Articles',       icon: NewspaperIcon },
-  { to: '/pages',      label: 'Pages',          icon: DocumentDuplicateIcon },
-  { to: '/media',      label: 'Media Library',  icon: PhotoIcon },
-  { to: '/services',   label: 'Services',       icon: WrenchScrewdriverIcon },
-  { to: '/news',       label: 'News',           icon: MegaphoneIcon },
-];
+import { useLang } from '../../contexts/LanguageContext';
 
 export default function Sidebar() {
+  const { T } = useLang();
+
+  const navItems = [
+    { to: '/dashboard', label: T.nav.dashboard,  icon: HomeIcon },
+    { to: '/reports',   label: T.nav.reports,    icon: DocumentTextIcon },
+    { to: '/articles',  label: T.nav.articles,   icon: NewspaperIcon },
+    { to: '/pages',     label: T.nav.pages,      icon: DocumentDuplicateIcon },
+    { to: '/media',     label: T.nav.media,      icon: PhotoIcon },
+    { to: '/services',  label: T.nav.services,   icon: WrenchScrewdriverIcon },
+    { to: '/news',      label: T.nav.news,        icon: MegaphoneIcon },
+  ];
+
   return (
     <aside className="w-64 bg-gray-900 text-white flex flex-col min-h-screen shrink-0">
       {/* Logo */}
       <div className="px-6 py-5 border-b border-gray-700">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+          <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0">
             OX
           </div>
           <div>
             <p className="font-semibold text-sm">OceanX Insight</p>
-            <p className="text-xs text-gray-400">CMS Portal</p>
+            <p className="text-xs text-gray-400">{T.nav.portal}</p>
           </div>
         </div>
       </div>
@@ -55,7 +58,6 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Footer */}
       <div className="px-6 py-4 border-t border-gray-700">
         <p className="text-xs text-gray-500">v1.0.0 — insight.oceanx.sa</p>
       </div>
