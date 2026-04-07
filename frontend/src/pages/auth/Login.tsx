@@ -20,8 +20,15 @@ export default function Login() {
       navigate('/dashboard');
       toast.success(T.auth.welcome);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Login failed';
-      toast.error(msg);
+      const code = (err as { code?: string })?.code ?? '';
+      const firebaseMessages: Record<string, string> = {
+        'auth/invalid-credential': 'Invalid email or password.',
+        'auth/user-not-found': 'No account found with this email.',
+        'auth/wrong-password': 'Incorrect password.',
+        'auth/too-many-requests': 'Too many attempts. Please try again later.',
+        'auth/user-disabled': 'This account has been disabled.',
+      };
+      toast.error(firebaseMessages[code] ?? 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }

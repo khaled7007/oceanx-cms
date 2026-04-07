@@ -1,0 +1,28 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "oceanx-upload-worker",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-04-07",
+	"observability": {
+		"enabled": true
+	},
+	"upload_source_maps": true,
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"r2_buckets": [
+		{
+			"binding": "BUCKET",
+			"bucket_name": "oceanx-media"
+		}
+	],
+	"vars": {
+		"PUBLIC_URL": "https://pub-91b66163d3c74c7f8eb56ede89ceac26.r2.dev",
+		"ALLOWED_ORIGIN": "http://localhost:5174",
+		"FIREBASE_PROJECT_ID": "oceanx-backend-dev"
+	}
+}

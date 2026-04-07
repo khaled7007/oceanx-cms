@@ -54,6 +54,7 @@ const t = {
       all_statuses: 'All statuses',
       published: 'Published',
       draft: 'Draft',
+      archived: 'Archived',
       or_paste_url: 'Or paste URL',
       save_tags: 'Save Tags',
       edit_tags: 'Edit Tags',
@@ -96,6 +97,8 @@ const t = {
       create: 'Create Report',
       update: 'Update Report',
       back: 'Back to Reports',
+      file: 'File',
+      view_report: 'View Report',
     },
 
     // ── Articles ────────────────────────────────────────────
@@ -255,6 +258,7 @@ const t = {
       all_statuses: 'جميع الحالات',
       published: 'منشور',
       draft: 'مسودة',
+      archived: 'مؤرشف',
       or_paste_url: 'أو الصق الرابط',
       save_tags: 'حفظ الوسوم',
       edit_tags: 'تعديل الوسوم',
@@ -295,6 +299,8 @@ const t = {
       create: 'إنشاء التقرير',
       update: 'تحديث التقرير',
       back: 'رجوع للتقارير',
+      file: 'الملف',
+      view_report: 'عرض التقرير',
     },
 
     articles: {

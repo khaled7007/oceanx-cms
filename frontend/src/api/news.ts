@@ -1,12 +1,12 @@
-import apiClient from './client';
-import { NewsItem, PaginatedResponse } from '../types';
+import { NewsItem } from '../types';
+import { newsService, NewsQueryParams } from '../services/news.service';
 
 export const newsApi = {
-  list: (params?: Record<string, string | number>) =>
-    apiClient.get<PaginatedResponse<NewsItem>>('/news', { params }),
-  get: (id: string) => apiClient.get<NewsItem>(`/news/${id}`),
-  create: (data: Partial<NewsItem>) => apiClient.post<NewsItem>('/news', data),
-  update: (id: string, data: Partial<NewsItem>) => apiClient.put<NewsItem>(`/news/${id}`, data),
-  delete: (id: string) => apiClient.delete(`/news/${id}`),
-  toggleStatus: (id: string) => apiClient.patch<{ id: string; status: string }>(`/news/${id}/toggle-status`),
+  list: (params?: NewsQueryParams) => newsService.list(params).then((data) => ({ data })),
+  get: (id: string) => newsService.getById(id).then((data) => ({ data })),
+  create: (dto: Partial<NewsItem>) => newsService.create(dto).then((data) => ({ data })),
+  update: (id: string, dto: Partial<NewsItem>) => newsService.update(id, dto).then((data) => ({ data })),
+  delete: (id: string) => newsService.remove(id).then(() => ({ data: {} })),
+  toggleStatus: (id: string) => newsService.toggleStatus(id).then((data) => ({ data })),
 };
+

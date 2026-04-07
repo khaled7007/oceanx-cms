@@ -20,10 +20,13 @@ export default function Badge({ children, variant = 'default', className = '' }:
   );
 }
 
+const STATUS_CONFIG: Record<string, { variant: BadgeProps['variant']; label: string }> = {
+  published: { variant: 'success', label: 'Published' },
+  draft: { variant: 'warning', label: 'Draft' },
+  archived: { variant: 'default', label: 'Archived' },
+};
+
 export function StatusBadge({ status }: { status: string }) {
-  return (
-    <Badge variant={status === 'published' ? 'success' : 'warning'}>
-      {status === 'published' ? 'Published' : 'Draft'}
-    </Badge>
-  );
+  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.draft;
+  return <Badge variant={config.variant}>{config.label}</Badge>;
 }

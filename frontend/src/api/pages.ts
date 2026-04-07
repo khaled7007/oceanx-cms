@@ -1,12 +1,12 @@
-import apiClient from './client';
-import { Page, PaginatedResponse } from '../types';
+import { Page } from '../types';
+import { pagesService, PageQueryParams } from '../services/pages.service';
 
 export const pagesApi = {
-  list: (params?: Record<string, string | number>) =>
-    apiClient.get<PaginatedResponse<Page>>('/pages', { params }),
-  get: (id: string) => apiClient.get<Page>(`/pages/${id}`),
-  create: (data: Partial<Page>) => apiClient.post<Page>('/pages', data),
-  update: (id: string, data: Partial<Page>) => apiClient.put<Page>(`/pages/${id}`, data),
-  delete: (id: string) => apiClient.delete(`/pages/${id}`),
-  toggleStatus: (id: string) => apiClient.patch<{ id: string; status: string }>(`/pages/${id}/toggle-status`),
+  list: (params?: PageQueryParams) => pagesService.list(params).then((data) => ({ data })),
+  get: (id: string) => pagesService.getById(id).then((data) => ({ data })),
+  create: (dto: Partial<Page>) => pagesService.create(dto).then((data) => ({ data })),
+  update: (id: string, dto: Partial<Page>) => pagesService.update(id, dto).then((data) => ({ data })),
+  delete: (id: string) => pagesService.remove(id).then(() => ({ data: {} })),
+  toggleStatus: (id: string) => pagesService.toggleStatus(id).then((data) => ({ data })),
 };
+

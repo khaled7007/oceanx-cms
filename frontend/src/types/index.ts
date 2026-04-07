@@ -1,5 +1,11 @@
 export type ContentStatus = 'draft' | 'published';
 
+export enum ReportStatus {
+  Draft = 'draft',
+  Published = 'published',
+  Archived = 'archived',
+}
+
 export interface User {
   id: string;
   email: string;
@@ -21,19 +27,24 @@ export interface PaginatedResponse<T> {
 
 export interface Report {
   id: string;
-  title_en: string;
-  title_ar?: string;
-  body_en?: string;
-  body_ar?: string;
-  author?: string;
-  publish_date?: string;
-  tags?: string[];
-  pdf_url?: string;
-  cover_image?: string;
-  status: ContentStatus;
+  title: string;
+  author: string;
+  tags: string[];
+  status: ReportStatus;
+  file_url?: string;
   created_at: string;
   updated_at: string;
 }
+
+export interface CreateReportDto {
+  title: string;
+  author: string;
+  tags: string[];
+  status: ReportStatus;
+  file_url?: string;
+}
+
+export type UpdateReportDto = Partial<CreateReportDto>;
 
 export interface Article {
   id: string;
