@@ -5,6 +5,11 @@ export interface Env {
 	FIREBASE_PROJECT_ID: string;
 }
 
+/** Decode a base64url string to its UTF-8 text. */
+function base64urlDecode(b64url: string): string {
+	return atob(b64url.replace(/-/g, '+').replace(/_/g, '/'));
+}
+
 /**
  * Verify a Firebase ID token (RS256 JWT) using Google's public JWK keys.
  * Returns the decoded payload on success, or throws on failure.
@@ -15,10 +20,10 @@ async function verifyFirebaseToken(token: string, projectId: string): Promise<Re
 
 	const [headerB64, payloadB64, sigB64] = parts;
 
-	const header = JSON.parse(atob(headerB64.replace(/-/g, '+').replace(/_/g, '/'))) as { kid?: string; alg?: string };
+	const header = JSON.parse(base64urlDecode(headerB64)) as { kid?: string; alg?: string };
 	if (header.alg !== 'RS256') throw new Error('Unsupported algorithm');
 
-	const payload = JSON.parse(atob(payloadB64.replace(/-/g, '+').replace(/_/g, '/'))) as Record<string, unknown>;
+	const payload = JSON.parse(base64urlDecode(payloadB64)) as Record<string, unknown>;
 
 	// Check expiry
 	const now = Math.floor(Date.now() / 1000);
@@ -41,7 +46,7 @@ async function verifyFirebaseToken(token: string, projectId: string): Promise<Re
 
 	const cryptoKey = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
 
-	const sigBytes = Uint8Array.from(atob(sigB64.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+	const sigBytes = Uint8Array.from(base64urlDecode(sigB64), (c) => c.charCodeAt(0));
 	const dataBytes = new TextEncoder().encode(`${headerB64}.${payloadB64}`);
 
 	const valid = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', cryptoKey, sigBytes, dataBytes);
@@ -81,7 +86,8 @@ export default {
 
 			try {
 				await verifyFirebaseToken(token, env.FIREBASE_PROJECT_ID);
-			} catch {
+			} catch (err) {
+				console.error('Token verification failed:', err instanceof Error ? err.message : err);
 				return new Response(JSON.stringify({ error: 'Unauthorized' }), {
 					status: 401,
 					headers: { 'Content-Type': 'application/json', ...corsHeaders },

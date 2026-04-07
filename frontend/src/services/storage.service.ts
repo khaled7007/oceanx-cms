@@ -37,7 +37,7 @@ export async function uploadFile(
           const { url } = JSON.parse(xhr.responseText) as { url: string };
           resolve(url);
         } catch {
-          reject(new Error(`Upload failed: invalid response from server`));
+          reject(new Error(`Upload failed: unexpected response (status ${xhr.status})`));
         }
       } else {
         let message = `Upload failed: ${xhr.status}`;
