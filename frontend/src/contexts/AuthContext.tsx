@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { authApi } from '../api/auth';
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../lib/firebase';
 import { User } from '../types';
 
 interface AuthContextValue {
@@ -18,29 +19,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('cms_token');
-    const storedUser = localStorage.getItem('cms_user');
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        const idToken = await firebaseUser.getIdToken();
+        setToken(idToken);
+        setUser({
+          id: firebaseUser.uid,
+          email: firebaseUser.email ?? '',
+          name: firebaseUser.displayName ?? 'Admin',
+          role: 'admin',
+        });
+      } else {
+        setToken(null);
+        setUser(null);
+      }
+      setIsLoading(false);
+    });
+    return unsubscribe;
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const res = await authApi.login(email, password);
-    const { token: newToken, user: newUser } = res.data;
-    localStorage.setItem('cms_token', newToken);
-    localStorage.setItem('cms_user', JSON.stringify(newUser));
-    setToken(newToken);
-    setUser(newUser);
+    await signInWithEmailAndPassword(auth, email, password);
+    // onAuthStateChanged updates user/token automatically
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('cms_token');
-    localStorage.removeItem('cms_user');
-    setToken(null);
-    setUser(null);
+  const logout = useCallback(async () => {
+    await signOut(auth);
   }, []);
 
   return (

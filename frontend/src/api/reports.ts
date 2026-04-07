@@ -1,12 +1,12 @@
-import apiClient from './client';
-import { Report, PaginatedResponse } from '../types';
+import { CreateReportDto, UpdateReportDto } from '../types';
+import { reportsService, ReportQueryParams } from '../services/reports.service';
 
 export const reportsApi = {
-  list: (params?: Record<string, string | number>) =>
-    apiClient.get<PaginatedResponse<Report>>('/reports', { params }),
-  get: (id: string) => apiClient.get<Report>(`/reports/${id}`),
-  create: (data: Partial<Report>) => apiClient.post<Report>('/reports', data),
-  update: (id: string, data: Partial<Report>) => apiClient.put<Report>(`/reports/${id}`, data),
-  delete: (id: string) => apiClient.delete(`/reports/${id}`),
-  toggleStatus: (id: string) => apiClient.patch<{ id: string; status: string }>(`/reports/${id}/toggle-status`),
+  list: (params?: ReportQueryParams) => reportsService.list(params).then((data) => ({ data })),
+  get: (id: string) => reportsService.getById(id).then((data) => ({ data })),
+  create: (dto: CreateReportDto) => reportsService.create(dto).then((data) => ({ data })),
+  update: (id: string, dto: UpdateReportDto) => reportsService.update(id, dto).then((data) => ({ data })),
+  delete: (id: string) => reportsService.remove(id).then(() => ({ data: {} })),
+  toggleStatus: (id: string) => reportsService.toggleStatus(id).then((data) => ({ data })),
 };
+
