@@ -38,11 +38,15 @@ export interface ReportQueryParams {
 function toReport(id: string, data: Record<string, unknown>): Report {
   const toISO = (v: unknown) =>
     v instanceof Timestamp ? v.toDate().toISOString() : (v as string) ?? new Date().toISOString();
+  const bil = (field: string) => {
+    const obj = data[field] as Record<string, unknown> | undefined;
+    return { en: (obj?.en as string) ?? '', ar: (obj?.ar as string) ?? undefined };
+  };
 
   return {
     id,
-    title: (data.title as string) ?? '',
-    author: (data.author as string) ?? '',
+    title: bil('title'),
+    author: bil('author'),
     tags: (data.tags as string[]) ?? [],
     status: (data.status as ReportStatus) ?? ReportStatus.Draft,
     file_url: (data.file_url as string) ?? undefined,
@@ -74,8 +78,10 @@ export const reportsService = {
         .map((d) => toReport(d.id, d.data() as Record<string, unknown>))
         .filter(
           (r) =>
-            r.title.toLowerCase().includes(search) ||
-            r.author.toLowerCase().includes(search) ||
+            r.title.en.toLowerCase().includes(search) ||
+            (r.title.ar ?? '').toLowerCase().includes(search) ||
+            r.author.en.toLowerCase().includes(search) ||
+            (r.author.ar ?? '').toLowerCase().includes(search) ||
             r.tags.some((t) => t.toLowerCase().includes(search)),
         );
       const start = (pageNum - 1) * pageSize;

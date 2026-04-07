@@ -29,13 +29,15 @@ export interface ServiceQueryParams {
 function toService(id: string, data: Record<string, unknown>): Service {
   const toISO = (v: unknown) =>
     v instanceof Timestamp ? v.toDate().toISOString() : (v as string) ?? new Date().toISOString();
+  const bil = (field: string) => {
+    const obj = data[field] as Record<string, unknown> | undefined;
+    return { en: (obj?.en as string) ?? '', ar: (obj?.ar as string) ?? undefined };
+  };
 
   return {
     id,
-    title_en: (data.title_en as string) ?? '',
-    title_ar: data.title_ar as string | undefined,
-    description_en: data.description_en as string | undefined,
-    description_ar: data.description_ar as string | undefined,
+    title: bil('title'),
+    description: bil('description'),
     icon_url: data.icon_url as string | undefined,
     image_url: data.image_url as string | undefined,
     order_index: (data.order_index as number) ?? 0,
@@ -64,9 +66,9 @@ export const servicesService = {
         .map((d) => toService(d.id, d.data() as Record<string, unknown>))
         .filter(
           (s) =>
-            s.title_en.toLowerCase().includes(search) ||
-            (s.title_ar ?? '').toLowerCase().includes(search) ||
-            (s.description_en ?? '').toLowerCase().includes(search),
+            s.title.en.toLowerCase().includes(search) ||
+            (s.title.ar ?? '').toLowerCase().includes(search) ||
+            (s.description?.en ?? '').toLowerCase().includes(search),
         );
       const start = (pageNum - 1) * pageSize;
       return {

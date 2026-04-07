@@ -13,7 +13,8 @@ import toast from 'react-hot-toast';
 
 export default function ServicesList() {
   const qc = useQueryClient();
-  const { T } = useLang();
+  const { T, lang } = useLang();
+  const isAr = lang === 'ar';
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<Service | null>(null);
@@ -66,8 +67,7 @@ export default function ServicesList() {
                     <tr key={service.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3 text-gray-500 font-mono text-xs">{service.order_index}</td>
                       <td className="px-4 py-3">
-                        <p className="font-medium text-gray-900">{service.title_en}</p>
-                        {service.title_ar && <p className="text-xs text-gray-400" dir="rtl">{service.title_ar}</p>}
+                        <p className="font-medium text-gray-900" dir={isAr ? 'rtl' : undefined}>{isAr ? (service.title.ar || service.title.en) : service.title.en}</p>
                       </td>
                       <td className="px-4 py-3">
                         {service.icon_url ? <img src={service.icon_url} alt="" className="w-8 h-8 object-contain" /> : <span className="text-gray-300 text-xs">—</span>}
@@ -100,7 +100,7 @@ export default function ServicesList() {
       <ConfirmModal open={!!deleteTarget} onClose={() => setDeleteTarget(null)}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
         loading={deleteMutation.isPending} title={T.services.delete_title}
-        message={T.services.delete_msg(deleteTarget?.title_en || '')} />
+        message={T.services.delete_msg(deleteTarget?.title.en || '')} />
     </div>
   );
 }

@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const emptyArticle: Partial<Article> = {
-  title_en: '', title_ar: '', body_en: '', body_ar: '',
+  title: { en: '' }, body: { en: '' },
   author: '', category: '', cover_image: '', status: 'draft', featured: false,
 };
 const CATEGORIES = ['Research', 'Science', 'Climate', 'Conservation', 'Technology', 'Policy', 'Other'];
@@ -52,7 +52,7 @@ export default function ArticleForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title_en?.trim()) { toast.error('English title is required'); return; }
+    if (!form.title?.en?.trim()) { toast.error('English title is required'); return; }
     saveMutation.mutate(form);
   };
 
@@ -68,10 +68,10 @@ export default function ArticleForm() {
         <div className="lg:col-span-2 space-y-5">
           <div className="bg-white rounded-xl p-5 shadow-sm space-y-4">
             <h3 className="font-semibold text-gray-900">{T.common.content}</h3>
-            <Input label={`${T.common.title_en} *`} value={form.title_en || ''} onChange={(e) => set('title_en', e.target.value)} required />
-            <Input label={T.common.title_ar} value={form.title_ar || ''} onChange={(e) => set('title_ar', e.target.value)} dir="rtl" />
-            <RichTextEditor label={T.common.body_en} value={form.body_en || ''} onChange={(html) => set('body_en', html)} />
-            <RichTextEditor label={T.common.body_ar} value={form.body_ar || ''} onChange={(html) => set('body_ar', html)} dir="rtl" />
+            <Input label={`${T.common.title_en} *`} value={form.title?.en || ''} onChange={(e) => set('title', { ...form.title, en: e.target.value })} required />
+            <Input label={T.common.title_ar} value={form.title?.ar || ''} onChange={(e) => set('title', { ...form.title, ar: e.target.value })} dir="rtl" />
+            <RichTextEditor label={T.common.body_en} value={form.body?.en || ''} onChange={(html) => set('body', { ...form.body, en: html })} />
+            <RichTextEditor label={T.common.body_ar} value={form.body?.ar || ''} onChange={(html) => set('body', { ...form.body, ar: html })} dir="rtl" />
           </div>
         </div>
 

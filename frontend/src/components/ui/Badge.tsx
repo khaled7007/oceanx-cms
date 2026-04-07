@@ -1,3 +1,5 @@
+import { useLang } from '../../contexts/LanguageContext';
+
 interface BadgeProps {
   children: React.ReactNode;
   variant?: 'success' | 'warning' | 'danger' | 'info' | 'default';
@@ -20,13 +22,15 @@ export default function Badge({ children, variant = 'default', className = '' }:
   );
 }
 
-const STATUS_CONFIG: Record<string, { variant: BadgeProps['variant']; label: string }> = {
-  published: { variant: 'success', label: 'Published' },
-  draft: { variant: 'warning', label: 'Draft' },
-  archived: { variant: 'default', label: 'Archived' },
+const STATUS_VARIANT: Record<string, BadgeProps['variant']> = {
+  published: 'success',
+  draft: 'warning',
+  archived: 'default',
 };
 
 export function StatusBadge({ status }: { status: string }) {
-  const config = STATUS_CONFIG[status] ?? STATUS_CONFIG.draft;
-  return <Badge variant={config.variant}>{config.label}</Badge>;
+  const { T } = useLang();
+  const variant = STATUS_VARIANT[status] ?? 'warning';
+  const label = (T.common[status as keyof typeof T.common] as string) ?? status;
+  return <Badge variant={variant}>{label}</Badge>;
 }

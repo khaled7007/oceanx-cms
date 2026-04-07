@@ -14,8 +14,8 @@ import { ArrowLeftIcon, ArrowRightIcon, DocumentArrowUpIcon, XMarkIcon, PlusIcon
 const STATUS_OPTIONS = Object.values(ReportStatus);
 
 const defaultForm: CreateReportDto = {
-  title: '',
-  author: '',
+  title: { en: '' },
+  author: { en: '' },
   tags: [],
   status: ReportStatus.Draft,
   file_url: '',
@@ -115,7 +115,7 @@ export default function ReportForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title.trim()) { toast.error('Title is required'); return; }
+    if (!form.title.en.trim()) { toast.error('English title is required'); return; }
     // Include any unsaved tag input
     const finalTags = tagInput.trim() && !form.tags.includes(tagInput.trim())
       ? [...form.tags, tagInput.trim()]
@@ -137,7 +137,7 @@ export default function ReportForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
+    <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
       <Link to="/reports" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
         <BackIcon className="w-4 h-4" /> {T.reports.back}
       </Link>
@@ -145,18 +145,34 @@ export default function ReportForm() {
       <div className="bg-white rounded-xl p-5 shadow-sm space-y-4">
         <h3 className="font-semibold text-gray-900">{T.common.content}</h3>
 
-        <Input
-          label={`${T.common.title} *`}
-          value={form.title}
-          onChange={(e) => set('title', e.target.value)}
-          required
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label={`${T.common.title_en} *`}
+            value={form.title.en}
+            onChange={(e) => set('title', { ...form.title, en: e.target.value })}
+            required
+          />
+          <Input
+            label={T.common.title_ar}
+            value={form.title.ar ?? ''}
+            onChange={(e) => set('title', { ...form.title, ar: e.target.value })}
+            dir="rtl"
+          />
+        </div>
 
-        <Input
-          label={T.common.author}
-          value={form.author}
-          onChange={(e) => set('author', e.target.value)}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label={T.common.author + ' (EN)'}
+            value={form.author.en}
+            onChange={(e) => set('author', { ...form.author, en: e.target.value })}
+          />
+          <Input
+            label={T.common.author + ' (AR)'}
+            value={form.author.ar ?? ''}
+            onChange={(e) => set('author', { ...form.author, ar: e.target.value })}
+            dir="rtl"
+          />
+        </div>
 
         <div className="space-y-1">
           <label className="block text-sm font-medium text-gray-700">{T.reports.tags_hint}</label>

@@ -16,7 +16,8 @@ import { ar, enUS } from 'date-fns/locale';
 export default function PagesList() {
   const qc = useQueryClient();
   const { T, lang } = useLang();
-  const locale = lang === 'ar' ? ar : enUS;
+  const isAr = lang === 'ar';
+  const locale = isAr ? ar : enUS;
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<Page | null>(null);
@@ -68,8 +69,7 @@ export default function PagesList() {
                   {data.data.map((p) => (
                     <tr key={p.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3">
-                        <p className="font-medium text-gray-900">{p.title_en}</p>
-                        {p.title_ar && <p className="text-xs text-gray-400" dir="rtl">{p.title_ar}</p>}
+                        <p className="font-medium text-gray-900" dir={isAr ? 'rtl' : undefined}>{isAr ? (p.title.ar || p.title.en) : p.title.en}</p>
                       </td>
                       <td className="px-4 py-3 font-mono text-xs text-gray-500">/{p.slug}</td>
                       <td className="px-4 py-3"><button onClick={() => toggleMutation.mutate(p.id)}><StatusBadge status={p.status} /></button></td>
@@ -97,7 +97,7 @@ export default function PagesList() {
       <ConfirmModal open={!!deleteTarget} onClose={() => setDeleteTarget(null)}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
         loading={deleteMutation.isPending} title={T.pages.delete_title}
-        message={T.pages.delete_msg(deleteTarget?.title_en || '', deleteTarget?.slug || '') + ' ' + T.common.confirm_delete_body} />
+        message={T.pages.delete_msg(deleteTarget?.title.en || '', deleteTarget?.slug || '') + ' ' + T.common.confirm_delete_body} />
     </div>
   );
 }
