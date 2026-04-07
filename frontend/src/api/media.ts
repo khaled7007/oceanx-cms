@@ -2,6 +2,7 @@ import {
   collection,
   doc,
   getDocs,
+  getDoc,
   addDoc,
   updateDoc,
   deleteDoc,
@@ -127,10 +128,9 @@ export const mediaApi = {
   },
 
   delete: async (id: string): Promise<{ data: Record<string, never> }> => {
-    const snap = await getDocs(query(mediaCol()));
-    const target = snap.docs.find((d) => d.id === id);
-    if (target) {
-      const data = target.data();
+    const snap = await getDoc(doc(db, COLLECTION, id));
+    if (snap.exists()) {
+      const data = snap.data();
       if (data.url) await deleteFile(data.url as string);
       await deleteDoc(doc(db, COLLECTION, id));
     }

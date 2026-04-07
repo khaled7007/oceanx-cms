@@ -71,7 +71,11 @@ export default function ReportForm() {
 
   const handleFileClear = async () => {
     if (form.file_url) {
-      await deleteFile(form.file_url);
+      try {
+        await deleteFile(form.file_url);
+      } catch {
+        toast.error(T.common.upload_failed);
+      }
     }
     set('file_url', '');
   };

@@ -128,6 +128,7 @@ export const reportsService = {
 
   async toggleStatus(id: string): Promise<Report> {
     const report = await this.getById(id);
+    if (report.status === ReportStatus.Archived) return report;
     const next = report.status === ReportStatus.Published ? ReportStatus.Draft : ReportStatus.Published;
     return this.update(id, { status: next });
   },

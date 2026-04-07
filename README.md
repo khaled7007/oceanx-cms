@@ -32,7 +32,7 @@ Browser ──▶ React SPA
 
 ## Prerequisites
 
-- Node.js ≥ 18
+- Node.js ≥ 20
 - A [Firebase](https://console.firebase.google.com/) project with **Authentication** (Email/Password) and **Firestore** enabled
 - A [Cloudflare](https://dash.cloudflare.com/) account with an **R2 bucket** and a **Worker** deployed
 
