@@ -9,7 +9,7 @@ import FileUpload from '../../components/ui/FileUpload';
 import { useLang } from '../../contexts/LanguageContext';
 import { uploadFile, deleteFile } from '../../services/storage.service';
 import toast from 'react-hot-toast';
-import { ArrowLeftIcon, ArrowRightIcon, DocumentArrowUpIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowRightIcon, DocumentArrowUpIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 const STATUS_OPTIONS = Object.values(ReportStatus);
 
@@ -30,7 +30,7 @@ export default function ReportForm() {
   const BackIcon = lang === 'ar' ? ArrowRightIcon : ArrowLeftIcon;
 
   const [form, setForm] = useState<CreateReportDto>(defaultForm);
-  const [tagsInput, setTagsInput] = useState('');
+  const [tagInput, setTagInput] = useState('');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const { data: existing, isLoading } = useQuery({
@@ -48,7 +48,7 @@ export default function ReportForm() {
         status: existing.status,
         file_url: existing.file_url ?? '',
       });
-      setTagsInput(existing.tags.join(', '));
+      setTagInput('');
     }
   }, [existing]);
 
@@ -94,11 +94,33 @@ export default function ReportForm() {
     },
   });
 
+  const addTag = () => {
+    const value = tagInput.trim();
+    if (value && !form.tags.includes(value)) {
+      set('tags', [...form.tags, value]);
+    }
+    setTagInput('');
+  };
+
+  const removeTag = (index: number) => {
+    set('tags', form.tags.filter((_, i) => i !== index));
+  };
+
+  const handleTagKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addTag();
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim()) { toast.error('Title is required'); return; }
-    const tags = tagsInput.split(',').map((t) => t.trim()).filter(Boolean);
-    saveMutation.mutate({ ...form, tags });
+    // Include any unsaved tag input
+    const finalTags = tagInput.trim() && !form.tags.includes(tagInput.trim())
+      ? [...form.tags, tagInput.trim()]
+      : form.tags;
+    saveMutation.mutate({ ...form, tags: finalTags });
   };
 
   const statusOptions = STATUS_OPTIONS.map((s) => ({
@@ -136,13 +158,43 @@ export default function ReportForm() {
           onChange={(e) => set('author', e.target.value)}
         />
 
-        <Input
-          label={T.reports.tags_hint}
-          value={tagsInput}
-          onChange={(e) => setTagsInput(e.target.value)}
-          placeholder="ocean, health, annual"
-          hint={T.reports.tags_hint}
-        />
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">{T.reports.tags_hint}</label>
+          <div className="flex flex-wrap gap-2">
+            {form.tags.map((tag, i) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-1 px-2.5 py-1 bg-brand-50 text-brand-700 rounded-lg text-sm"
+              >
+                {tag}
+                <button
+                  type="button"
+                  onClick={() => removeTag(i)}
+                  className="text-brand-400 hover:text-red-500"
+                >
+                  <XMarkIcon className="w-3.5 h-3.5" />
+                </button>
+              </span>
+            ))}
+            <div className="flex items-center gap-1">
+              <input
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+                placeholder={form.tags.length === 0 ? 'Add a tag...' : ''}
+                className="px-2.5 py-1 text-sm border border-gray-200 rounded-lg w-32 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              />
+              <button
+                type="button"
+                onClick={addTag}
+                disabled={!tagInput.trim()}
+                className="p-1 rounded-lg text-white bg-brand-500 hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <PlusIcon className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
 
         <Select
           label={T.common.status}
