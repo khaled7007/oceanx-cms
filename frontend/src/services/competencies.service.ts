@@ -30,14 +30,25 @@ function toCompetency(id: string, data: Record<string, unknown>): Competency {
   const toISO = (v: unknown) =>
     v instanceof Timestamp ? v.toDate().toISOString() : (v as string) ?? new Date().toISOString();
   const bil = (field: string) => {
-    const obj = data[field] as Record<string, unknown> | undefined;
-    return { en: (obj?.en as string) ?? '', ar: (obj?.ar as string) ?? undefined };
+    const obj = data[field];
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      const o = obj as Record<string, unknown>;
+      return { en: (o.en as string) ?? '', ar: (o.ar as string) ?? undefined };
+    }
+    return { en: (data[`${field}_en`] as string) ?? '', ar: (data[`${field}_ar`] as string) ?? undefined };
   };
   const bilArr = (field: string) => {
-    const obj = data[field] as Record<string, unknown> | undefined;
+    const obj = data[field];
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      const o = obj as Record<string, unknown>;
+      return {
+        en: Array.isArray(o.en) ? (o.en as string[]) : [],
+        ar: Array.isArray(o.ar) ? (o.ar as string[]) : [],
+      };
+    }
     return {
-      en: Array.isArray(obj?.en) ? (obj.en as string[]) : [],
-      ar: Array.isArray(obj?.ar) ? (obj.ar as string[]) : [],
+      en: Array.isArray(data[`${field}_en`]) ? (data[`${field}_en`] as string[]) : [],
+      ar: Array.isArray(data[`${field}_ar`]) ? (data[`${field}_ar`] as string[]) : [],
     };
   };
 

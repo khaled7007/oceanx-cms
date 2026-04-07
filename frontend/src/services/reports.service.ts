@@ -39,8 +39,12 @@ function toReport(id: string, data: Record<string, unknown>): Report {
   const toISO = (v: unknown) =>
     v instanceof Timestamp ? v.toDate().toISOString() : (v as string) ?? new Date().toISOString();
   const bil = (field: string) => {
-    const obj = data[field] as Record<string, unknown> | undefined;
-    return { en: (obj?.en as string) ?? '', ar: (obj?.ar as string) ?? undefined };
+    const obj = data[field];
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      const o = obj as Record<string, unknown>;
+      return { en: (o.en as string) ?? '', ar: (o.ar as string) ?? undefined };
+    }
+    return { en: (data[`${field}_en`] as string) ?? '', ar: (data[`${field}_ar`] as string) ?? undefined };
   };
 
   return {
