@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const emptyService: Partial<Service> = {
-  title_en: '', title_ar: '', description_en: '', description_ar: '',
+  title: { en: '' }, description: { en: '' },
   icon_url: '', image_url: '', order_index: 0, active: true,
 };
 
@@ -51,7 +51,7 @@ export default function ServiceForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.title_en?.trim()) { toast.error('English title is required'); return; }
+    if (!form.title?.en?.trim()) { toast.error('English title is required'); return; }
     saveMutation.mutate(form);
   };
 
@@ -67,10 +67,10 @@ export default function ServiceForm() {
         <div className="lg:col-span-2 space-y-5">
           <div className="bg-white rounded-xl p-5 shadow-sm space-y-4">
             <h3 className="font-semibold text-gray-900">{T.services.details}</h3>
-            <Input label={`${T.common.title_en} *`} value={form.title_en || ''} onChange={(e) => set('title_en', e.target.value)} required />
-            <Input label={T.common.title_ar} value={form.title_ar || ''} onChange={(e) => set('title_ar', e.target.value)} dir="rtl" />
-            <Textarea label={T.services.desc_en} value={form.description_en || ''} onChange={(e) => set('description_en', e.target.value)} rows={4} />
-            <Textarea label={T.services.desc_ar} value={form.description_ar || ''} onChange={(e) => set('description_ar', e.target.value)} rows={4} dir="rtl" />
+            <Input label={`${T.common.title_en} *`} value={form.title?.en || ''} onChange={(e) => set('title', { ...form.title, en: e.target.value })} required />
+            <Input label={T.common.title_ar} value={form.title?.ar || ''} onChange={(e) => set('title', { ...form.title, ar: e.target.value })} dir="rtl" />
+            <Textarea label={T.services.desc_en} value={form.description?.en || ''} onChange={(e) => set('description', { ...form.description, en: e.target.value })} rows={4} />
+            <Textarea label={T.services.desc_ar} value={form.description?.ar || ''} onChange={(e) => set('description', { ...form.description, ar: e.target.value })} rows={4} dir="rtl" />
           </div>
         </div>
 

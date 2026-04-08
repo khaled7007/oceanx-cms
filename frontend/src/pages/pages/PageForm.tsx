@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 import { ArrowLeftIcon, ArrowRightIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 const emptyPage: Partial<Page> = {
-  slug: '', title_en: '', title_ar: '', sections: [],
+  slug: '', title: { en: '' }, sections: [],
   meta_title: '', meta_description: '', meta_keywords: '', status: 'draft',
 };
 const SECTION_TYPES = ['hero', 'text', 'image', 'cta', 'contact_form', 'team', 'stats'];
@@ -33,9 +33,16 @@ export default function PageForm() {
   useEffect(() => { if (existing) setForm(existing); }, [existing]);
   const set = (field: keyof Page, value: unknown) => setForm((f) => ({ ...f, [field]: value }));
 
-  const addSection = () => set('sections', [...(form.sections || []), { type: 'text', title_en: '', body_en: '' }]);
-  const updateSection = (idx: number, field: string, value: string) =>
-    set('sections', (form.sections || []).map((s, i) => i === idx ? { ...s, [field]: value } : s));
+  const addSection = () => set('sections', [...(form.sections || []), { type: 'text', title: { en: '' }, body: { en: '' } }]);
+  const updateSection = (idx: number, field: string, langOrValue: string, value?: string) =>
+    set('sections', (form.sections || []).map((s, i) => {
+      if (i !== idx) return s;
+      if (value !== undefined) {
+        const bilField = s[field] as Record<string, unknown> | undefined;
+        return { ...s, [field]: { ...bilField, [langOrValue]: value } };
+      }
+      return { ...s, [field]: langOrValue };
+    }));
   const removeSection = (idx: number) => set('sections', (form.sections || []).filter((_, i) => i !== idx));
 
   const saveMutation = useMutation({
@@ -46,7 +53,7 @@ export default function PageForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.slug?.trim() || !form.title_en?.trim()) { toast.error('Slug and title are required'); return; }
+    if (!form.slug?.trim() || !form.title?.en?.trim()) { toast.error('Slug and title are required'); return; }
     const slug = form.slug.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     saveMutation.mutate({ ...form, slug });
   };
@@ -63,8 +70,8 @@ export default function PageForm() {
         <div className="lg:col-span-2 space-y-5">
           <div className="bg-white rounded-xl p-5 shadow-sm space-y-4">
             <h3 className="font-semibold text-gray-900">{T.pages.page_info}</h3>
-            <Input label={`${T.common.title_en} *`} value={form.title_en || ''} onChange={(e) => set('title_en', e.target.value)} required />
-            <Input label={T.common.title_ar} value={form.title_ar || ''} onChange={(e) => set('title_ar', e.target.value)} dir="rtl" />
+            <Input label={`${T.common.title_en} *`} value={form.title?.en || ''} onChange={(e) => set('title', { ...form.title, en: e.target.value })} required />
+            <Input label={T.common.title_ar} value={form.title?.ar || ''} onChange={(e) => set('title', { ...form.title, ar: e.target.value })} dir="rtl" />
             <Input label={`${T.pages.slug} *`} value={form.slug || ''} onChange={(e) => set('slug', e.target.value)} hint={T.pages.slug_hint} />
           </div>
 
@@ -89,10 +96,10 @@ export default function PageForm() {
                     <TrashIcon className="w-4 h-4" />
                   </button>
                 </div>
-                <Input placeholder={T.pages.section_title_en} value={String(section.title_en || '')} onChange={(e) => updateSection(idx, 'title_en', e.target.value)} />
-                <Input placeholder={T.pages.section_title_ar} value={String(section.title_ar || '')} onChange={(e) => updateSection(idx, 'title_ar', e.target.value)} dir="rtl" />
-                <Textarea placeholder={T.pages.section_body_en} value={String(section.body_en || '')} onChange={(e) => updateSection(idx, 'body_en', e.target.value)} />
-                <Textarea placeholder={T.pages.section_body_ar} value={String(section.body_ar || '')} onChange={(e) => updateSection(idx, 'body_ar', e.target.value)} dir="rtl" />
+                <Input placeholder={T.pages.section_title_en} value={String(section.title?.en || '')} onChange={(e) => updateSection(idx, 'title', 'en', e.target.value)} />
+                <Input placeholder={T.pages.section_title_ar} value={String(section.title?.ar || '')} onChange={(e) => updateSection(idx, 'title', 'ar', e.target.value)} dir="rtl" />
+                <Textarea placeholder={T.pages.section_body_en} value={String(section.body?.en || '')} onChange={(e) => updateSection(idx, 'body', 'en', e.target.value)} />
+                <Textarea placeholder={T.pages.section_body_ar} value={String(section.body?.ar || '')} onChange={(e) => updateSection(idx, 'body', 'ar', e.target.value)} dir="rtl" />
               </div>
             ))}
           </div>

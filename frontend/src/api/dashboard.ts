@@ -8,6 +8,7 @@ import {
   orderBy,
   limit,
   getDocs,
+  Timestamp,
 } from 'firebase/firestore';
 
 async function countWhere(col: string, field?: string, value?: unknown): Promise<number> {
@@ -52,11 +53,21 @@ export const dashboardApi = {
         const snap = await getDocs(q);
         return snap.docs.map((d) => {
           const data = d.data();
+          const titleObj = data.title;
+          const headlineObj = data.headline;
+          const nameObj = data.name;
+          const getEn = (obj: unknown, fallbackKey: string) => {
+            if (obj && typeof obj === 'object' && !Array.isArray(obj)) return ((obj as Record<string, unknown>).en as string) || '';
+            if (typeof obj === 'string') return obj;
+            return (data[fallbackKey] as string) || '';
+          };
+          const ts = data.created_at;
+          const createdISO = ts instanceof Timestamp ? ts.toDate().toISOString() : (ts as string) ?? new Date().toISOString();
           return {
             type: col === 'articles' ? 'article' : col === 'reports' ? 'report' : col === 'news' ? 'news' : col === 'pages' ? 'page' : 'service',
-            title: data.title_en || data.headline_en || data.title || '',
+            title: getEn(titleObj, 'title_en') || getEn(headlineObj, 'headline_en') || getEn(nameObj, 'name_en'),
             status: data.status || (data.active ? 'active' : 'inactive'),
-            created_at: data.created_at,
+            created_at: createdISO,
           };
         });
       }),

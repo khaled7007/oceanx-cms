@@ -16,17 +16,17 @@ import {
   QueryConstraint,
 } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { Service, PaginatedResponse } from '../types';
+import { Competency, PaginatedResponse } from '../types';
 
-const COLLECTION = 'services';
+const COLLECTION = 'competencies';
 
-export interface ServiceQueryParams {
+export interface CompetencyQueryParams {
   page?: number;
   limit?: number;
   search?: string;
 }
 
-function toService(id: string, data: Record<string, unknown>): Service {
+function toCompetency(id: string, data: Record<string, unknown>): Competency {
   const toISO = (v: unknown) =>
     v instanceof Timestamp ? v.toDate().toISOString() : (v as string) ?? new Date().toISOString();
   const bil = (field: string) => {
@@ -37,15 +37,31 @@ function toService(id: string, data: Record<string, unknown>): Service {
     }
     return { en: (data[`${field}_en`] as string) ?? '', ar: (data[`${field}_ar`] as string) ?? undefined };
   };
+  const bilArr = (field: string) => {
+    const obj = data[field];
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      const o = obj as Record<string, unknown>;
+      return {
+        en: Array.isArray(o.en) ? (o.en as string[]) : [],
+        ar: Array.isArray(o.ar) ? (o.ar as string[]) : [],
+      };
+    }
+    return {
+      en: Array.isArray(data[`${field}_en`]) ? (data[`${field}_en`] as string[]) : [],
+      ar: Array.isArray(data[`${field}_ar`]) ? (data[`${field}_ar`] as string[]) : [],
+    };
+  };
 
   return {
     id,
-    title: bil('title'),
-    description: bil('description'),
-    icon_url: data.icon_url as string | undefined,
-    image_url: data.image_url as string | undefined,
-    order_index: (data.order_index as number) ?? 0,
-    active: (data.active as boolean) ?? true,
+    name: bil('name'),
+    position: bil('position'),
+    photo: data.photo as string | undefined,
+    category: data.category as Competency['category'],
+    department: bil('department'),
+    overview: bil('overview'),
+    experience: bilArr('experience'),
+    linkedin_url: data.linkedin_url as string | undefined,
     created_at: toISO(data.created_at),
     updated_at: toISO(data.updated_at),
   };
@@ -53,8 +69,8 @@ function toService(id: string, data: Record<string, unknown>): Service {
 
 const col = () => collection(db, COLLECTION);
 
-export const servicesService = {
-  async list(params: ServiceQueryParams = {}): Promise<PaginatedResponse<Service>> {
+export const competenciesService = {
+  async list(params: CompetencyQueryParams = {}): Promise<PaginatedResponse<Competency>> {
     const pageSize = Math.min(params.limit ?? 10, 100);
     const pageNum = Math.max(params.page ?? 1, 1);
     const search = (params.search ?? '').toLowerCase().trim();
@@ -67,12 +83,15 @@ export const servicesService = {
     if (search) {
       const snap = await getDocs(query(col(), ...constraints));
       const all = snap.docs
-        .map((d) => toService(d.id, d.data() as Record<string, unknown>))
+        .map((d) => toCompetency(d.id, d.data() as Record<string, unknown>))
         .filter(
-          (s) =>
-            s.title.en.toLowerCase().includes(search) ||
-            (s.title.ar ?? '').toLowerCase().includes(search) ||
-            (s.description?.en ?? '').toLowerCase().includes(search),
+          (c) =>
+            c.name.en.toLowerCase().includes(search) ||
+            (c.name.ar ?? '').toLowerCase().includes(search) ||
+            c.position.en.toLowerCase().includes(search) ||
+            (c.position.ar ?? '').toLowerCase().includes(search) ||
+            (c.department?.en ?? '').toLowerCase().includes(search) ||
+            (c.department?.ar ?? '').toLowerCase().includes(search),
         );
       const start = (pageNum - 1) * pageSize;
       return {
@@ -91,7 +110,7 @@ export const servicesService = {
     }
 
     const snap = await getDocs(query(col(), ...pageConstraints));
-    const data = snap.docs.map((d) => toService(d.id, d.data() as Record<string, unknown>));
+    const data = snap.docs.map((d) => toCompetency(d.id, d.data() as Record<string, unknown>));
 
     return {
       data,
@@ -99,20 +118,20 @@ export const servicesService = {
     };
   },
 
-  async getById(id: string): Promise<Service> {
+  async getById(id: string): Promise<Competency> {
     const snap = await getDoc(doc(db, COLLECTION, id));
-    if (!snap.exists()) throw new Error(`Service not found: ${id}`);
-    return toService(snap.id, snap.data() as Record<string, unknown>);
+    if (!snap.exists()) throw new Error(`Competency not found: ${id}`);
+    return toCompetency(snap.id, snap.data() as Record<string, unknown>);
   },
 
-  async create(dto: Partial<Service>): Promise<Service> {
+  async create(dto: Partial<Competency>): Promise<Competency> {
     const now = serverTimestamp();
     const { id: _, created_at: _c, updated_at: _u, ...fields } = dto as Record<string, unknown>;
     const ref = await addDoc(col(), { ...fields, created_at: now, updated_at: now });
     return this.getById(ref.id);
   },
 
-  async update(id: string, dto: Partial<Service>): Promise<Service> {
+  async update(id: string, dto: Partial<Competency>): Promise<Competency> {
     const { id: _, created_at: _c, updated_at: _u, ...fields } = dto as Record<string, unknown>;
     await updateDoc(doc(db, COLLECTION, id), { ...fields, updated_at: serverTimestamp() });
     return this.getById(id);
@@ -120,10 +139,5 @@ export const servicesService = {
 
   async remove(id: string): Promise<void> {
     await deleteDoc(doc(db, COLLECTION, id));
-  },
-
-  async toggleActive(id: string): Promise<Service> {
-    const svc = await this.getById(id);
-    return this.update(id, { active: !svc.active });
   },
 };

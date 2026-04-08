@@ -17,7 +17,8 @@ import { ar, enUS } from 'date-fns/locale';
 export default function ReportsList() {
   const qc = useQueryClient();
   const { T, lang } = useLang();
-  const locale = lang === 'ar' ? ar : enUS;
+  const isAr = lang === 'ar';
+  const locale = isAr ? ar : enUS;
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<ReportStatus | ''>('');
@@ -106,9 +107,9 @@ export default function ReportsList() {
                 {data.data.map((report) => (
                   <tr key={report.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
-                      <p className="font-medium text-gray-900 truncate max-w-xs">{report.title}</p>
+                      <p className="font-medium text-gray-900 truncate max-w-xs" dir={isAr ? 'rtl' : undefined}>{isAr ? (report.title.ar || report.title.en) : report.title.en}</p>
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{report.author || '—'}</td>
+                    <td className="px-4 py-3 text-gray-600" dir={isAr ? 'rtl' : undefined}>{isAr ? (report.author.ar || report.author.en || '—') : (report.author.en || '—')}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
                         {report.tags.slice(0, 3).map((tag) => (
@@ -175,7 +176,7 @@ export default function ReportsList() {
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
         loading={deleteMutation.isPending}
         title={T.reports.delete_title}
-        message={T.reports.delete_msg(deleteTarget?.title || '') + ' ' + T.common.confirm_delete_body}
+        message={T.reports.delete_msg(deleteTarget?.title.en || '') + ' ' + T.common.confirm_delete_body}
       />
     </div>
   );

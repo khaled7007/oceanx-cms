@@ -31,13 +31,19 @@ export interface ArticleQueryParams {
 function toArticle(id: string, data: Record<string, unknown>): Article {
   const toISO = (v: unknown) =>
     v instanceof Timestamp ? v.toDate().toISOString() : (v as string) ?? new Date().toISOString();
+  const bil = (field: string) => {
+    const obj = data[field];
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      const o = obj as Record<string, unknown>;
+      return { en: (o.en as string) ?? '', ar: (o.ar as string) ?? undefined };
+    }
+    return { en: (data[`${field}_en`] as string) ?? '', ar: (data[`${field}_ar`] as string) ?? undefined };
+  };
 
   return {
     id,
-    title_en: (data.title_en as string) ?? '',
-    title_ar: data.title_ar as string | undefined,
-    body_en: data.body_en as string | undefined,
-    body_ar: data.body_ar as string | undefined,
+    title: bil('title'),
+    body: bil('body'),
     author: data.author as string | undefined,
     category: data.category as string | undefined,
     cover_image: data.cover_image as string | undefined,
@@ -69,8 +75,8 @@ export const articlesService = {
         .map((d) => toArticle(d.id, d.data() as Record<string, unknown>))
         .filter(
           (a) =>
-            a.title_en.toLowerCase().includes(search) ||
-            (a.title_ar ?? '').toLowerCase().includes(search) ||
+            a.title.en.toLowerCase().includes(search) ||
+            (a.title.ar ?? '').toLowerCase().includes(search) ||
             (a.author ?? '').toLowerCase().includes(search) ||
             (a.category ?? '').toLowerCase().includes(search),
         );

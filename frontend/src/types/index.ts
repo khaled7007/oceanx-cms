@@ -25,10 +25,20 @@ export interface PaginatedResponse<T> {
   pagination: PaginationMeta;
 }
 
+export interface Bilingual {
+  en: string;
+  ar?: string;
+}
+
+export interface BilingualArray {
+  en: string[];
+  ar: string[];
+}
+
 export interface Report {
   id: string;
-  title: string;
-  author: string;
+  title: Bilingual;
+  author: Bilingual;
   tags: string[];
   status: ReportStatus;
   file_url?: string;
@@ -37,8 +47,8 @@ export interface Report {
 }
 
 export interface CreateReportDto {
-  title: string;
-  author: string;
+  title: Bilingual;
+  author: Bilingual;
   tags: string[];
   status: ReportStatus;
   file_url?: string;
@@ -48,10 +58,8 @@ export type UpdateReportDto = Partial<CreateReportDto>;
 
 export interface Article {
   id: string;
-  title_en: string;
-  title_ar?: string;
-  body_en?: string;
-  body_ar?: string;
+  title: Bilingual;
+  body?: Bilingual;
   author?: string;
   category?: string;
   cover_image?: string;
@@ -64,8 +72,7 @@ export interface Article {
 export interface Page {
   id: string;
   slug: string;
-  title_en: string;
-  title_ar?: string;
+  title: Bilingual;
   sections?: ContentSection[];
   meta_title?: string;
   meta_description?: string;
@@ -77,10 +84,8 @@ export interface Page {
 
 export interface ContentSection {
   type: string;
-  title_en?: string;
-  title_ar?: string;
-  body_en?: string;
-  body_ar?: string;
+  title?: Bilingual;
+  body?: Bilingual;
   [key: string]: unknown;
 }
 
@@ -97,10 +102,8 @@ export interface Media {
 
 export interface Service {
   id: string;
-  title_en: string;
-  title_ar?: string;
-  description_en?: string;
-  description_ar?: string;
+  title: Bilingual;
+  description?: Bilingual;
   icon_url?: string;
   image_url?: string;
   order_index: number;
@@ -111,14 +114,31 @@ export interface Service {
 
 export interface NewsItem {
   id: string;
-  headline_en: string;
-  headline_ar?: string;
-  body_en?: string;
-  body_ar?: string;
+  headline: Bilingual;
+  body?: Bilingual;
   source?: string;
   publish_date?: string;
   cover_image?: string;
   status: ContentStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export enum CompetencyCategory {
+  BoardOfDirectors = 'Board of Directors',
+  ConsultingTeam = 'Consulting Team',
+}
+
+export interface Competency {
+  id: string;
+  name: Bilingual;
+  position: Bilingual;
+  photo?: string;
+  category: CompetencyCategory;
+  department?: Bilingual;
+  overview?: Bilingual;
+  experience: BilingualArray;
+  linkedin_url?: string;
   created_at: string;
   updated_at: string;
 }

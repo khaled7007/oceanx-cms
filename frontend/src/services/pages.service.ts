@@ -31,12 +31,19 @@ export interface PageQueryParams {
 function toPage(id: string, data: Record<string, unknown>): Page {
   const toISO = (v: unknown) =>
     v instanceof Timestamp ? v.toDate().toISOString() : (v as string) ?? new Date().toISOString();
+  const bil = (field: string) => {
+    const obj = data[field];
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      const o = obj as Record<string, unknown>;
+      return { en: (o.en as string) ?? '', ar: (o.ar as string) ?? undefined };
+    }
+    return { en: (data[`${field}_en`] as string) ?? '', ar: (data[`${field}_ar`] as string) ?? undefined };
+  };
 
   return {
     id,
     slug: (data.slug as string) ?? '',
-    title_en: (data.title_en as string) ?? '',
-    title_ar: data.title_ar as string | undefined,
+    title: bil('title'),
     sections: data.sections as Page['sections'],
     meta_title: data.meta_title as string | undefined,
     meta_description: data.meta_description as string | undefined,
@@ -68,8 +75,8 @@ export const pagesService = {
         .map((d) => toPage(d.id, d.data() as Record<string, unknown>))
         .filter(
           (p) =>
-            p.title_en.toLowerCase().includes(search) ||
-            (p.title_ar ?? '').toLowerCase().includes(search) ||
+            p.title.en.toLowerCase().includes(search) ||
+            (p.title.ar ?? '').toLowerCase().includes(search) ||
             p.slug.toLowerCase().includes(search),
         );
       const start = (pageNum - 1) * pageSize;

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { articlesApi } from '../../api/articles';
-import { Article } from '../../types';
+import { Article, ContentStatus } from '../../types';
 import Button from '../../components/ui/Button';
 import Badge, { StatusBadge } from '../../components/ui/Badge';
 import Pagination from '../../components/ui/Pagination';
@@ -16,10 +16,11 @@ import { ar, enUS } from 'date-fns/locale';
 export default function ArticlesList() {
   const qc = useQueryClient();
   const { T, lang } = useLang();
-  const locale = lang === 'ar' ? ar : enUS;
+  const isAr = lang === 'ar';
+  const locale = isAr ? ar : enUS;
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('');
+  const [status, setStatus] = useState<'' | ContentStatus>('');
   const [deleteTarget, setDeleteTarget] = useState<Article | null>(null);
 
   const { data, isLoading } = useQuery({
@@ -48,7 +49,7 @@ export default function ArticlesList() {
               placeholder={T.articles.search}
               className="ps-9 pe-3 py-2 text-sm border border-gray-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
-          <select value={status} onChange={(e) => { setStatus(e.target.value); setPage(1); }}
+          <select value={status} onChange={(e) => { setStatus(e.target.value as '' | ContentStatus); setPage(1); }}
             className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500">
             <option value="">{T.common.all_statuses}</option>
             <option value="published">{T.common.published}</option>
@@ -79,8 +80,7 @@ export default function ArticlesList() {
                   {data.data.map((article) => (
                     <tr key={article.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-4 py-3">
-                        <p className="font-medium text-gray-900 truncate max-w-xs">{article.title_en}</p>
-                        {article.title_ar && <p className="text-xs text-gray-400 truncate" dir="rtl">{article.title_ar}</p>}
+                        <p className="font-medium text-gray-900 truncate max-w-xs" dir={isAr ? 'rtl' : undefined}>{isAr ? (article.title.ar || article.title.en) : article.title.en}</p>
                       </td>
                       <td className="px-4 py-3 text-gray-600">{article.author || '—'}</td>
                       <td className="px-4 py-3 text-gray-600">{article.category || '—'}</td>
@@ -110,7 +110,7 @@ export default function ArticlesList() {
       <ConfirmModal open={!!deleteTarget} onClose={() => setDeleteTarget(null)}
         onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
         loading={deleteMutation.isPending} title={T.articles.delete_title}
-        message={T.articles.delete_msg(deleteTarget?.title_en || '')} />
+        message={T.articles.delete_msg(deleteTarget?.title.en || '')} />
     </div>
   );
 }

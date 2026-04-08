@@ -31,13 +31,19 @@ export interface NewsQueryParams {
 function toNewsItem(id: string, data: Record<string, unknown>): NewsItem {
   const toISO = (v: unknown) =>
     v instanceof Timestamp ? v.toDate().toISOString() : (v as string) ?? new Date().toISOString();
+  const bil = (field: string) => {
+    const obj = data[field];
+    if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+      const o = obj as Record<string, unknown>;
+      return { en: (o.en as string) ?? '', ar: (o.ar as string) ?? undefined };
+    }
+    return { en: (data[`${field}_en`] as string) ?? '', ar: (data[`${field}_ar`] as string) ?? undefined };
+  };
 
   return {
     id,
-    headline_en: (data.headline_en as string) ?? '',
-    headline_ar: data.headline_ar as string | undefined,
-    body_en: data.body_en as string | undefined,
-    body_ar: data.body_ar as string | undefined,
+    headline: bil('headline'),
+    body: bil('body'),
     source: data.source as string | undefined,
     publish_date: data.publish_date as string | undefined,
     cover_image: data.cover_image as string | undefined,
@@ -68,8 +74,8 @@ export const newsService = {
         .map((d) => toNewsItem(d.id, d.data() as Record<string, unknown>))
         .filter(
           (n) =>
-            n.headline_en.toLowerCase().includes(search) ||
-            (n.headline_ar ?? '').toLowerCase().includes(search) ||
+            n.headline.en.toLowerCase().includes(search) ||
+            (n.headline.ar ?? '').toLowerCase().includes(search) ||
             (n.source ?? '').toLowerCase().includes(search),
         );
       const start = (pageNum - 1) * pageSize;

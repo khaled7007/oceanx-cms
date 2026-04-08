@@ -13,7 +13,7 @@ import toast from 'react-hot-toast';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const emptyNews: Partial<NewsItem> = {
-  headline_en: '', headline_ar: '', body_en: '', body_ar: '',
+  headline: { en: '' }, body: { en: '' },
   source: '', publish_date: '', cover_image: '', status: 'draft',
 };
 
@@ -51,7 +51,7 @@ export default function NewsForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.headline_en?.trim()) { toast.error('English headline is required'); return; }
+    if (!form.headline?.en?.trim()) { toast.error('English headline is required'); return; }
     saveMutation.mutate(form);
   };
 
@@ -67,10 +67,10 @@ export default function NewsForm() {
         <div className="lg:col-span-2 space-y-5">
           <div className="bg-white rounded-xl p-5 shadow-sm space-y-4">
             <h3 className="font-semibold text-gray-900">{T.common.content}</h3>
-            <Input label={`${T.news.headline_en} *`} value={form.headline_en || ''} onChange={(e) => set('headline_en', e.target.value)} required />
-            <Input label={T.news.headline_ar} value={form.headline_ar || ''} onChange={(e) => set('headline_ar', e.target.value)} dir="rtl" />
-            <RichTextEditor label={T.common.body_en} value={form.body_en || ''} onChange={(html) => set('body_en', html)} />
-            <RichTextEditor label={T.common.body_ar} value={form.body_ar || ''} onChange={(html) => set('body_ar', html)} dir="rtl" />
+            <Input label={`${T.news.headline_en} *`} value={form.headline?.en || ''} onChange={(e) => set('headline', { ...form.headline, en: e.target.value })} required />
+            <Input label={T.news.headline_ar} value={form.headline?.ar || ''} onChange={(e) => set('headline', { ...form.headline, ar: e.target.value })} dir="rtl" />
+            <RichTextEditor label={T.common.body_en} value={form.body?.en || ''} onChange={(html) => set('body', { ...form.body, en: html })} />
+            <RichTextEditor label={T.common.body_ar} value={form.body?.ar || ''} onChange={(html) => set('body', { ...form.body, ar: html })} dir="rtl" />
           </div>
         </div>
 

@@ -7,6 +7,7 @@ import {
   PhotoIcon,
   WrenchScrewdriverIcon,
   MegaphoneIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
 
@@ -21,6 +22,7 @@ export default function Sidebar() {
     { to: '/media',     label: T.nav.media,      icon: PhotoIcon },
     { to: '/services',  label: T.nav.services,   icon: WrenchScrewdriverIcon },
     { to: '/news',      label: T.nav.news,        icon: MegaphoneIcon },
+    { to: '/competencies', label: T.nav.competencies, icon: UserGroupIcon },
   ];
 
   return (

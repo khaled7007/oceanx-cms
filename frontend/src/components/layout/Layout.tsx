@@ -20,6 +20,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     '/services/new': `${T.common.new} ${T.nav.services.replace(/s$/, '')}`,
     '/news':         T.nav.news,
     '/news/new':     `${T.common.new} ${T.nav.news.replace(/s$/, '')}`,
+    '/competencies':     T.nav.competencies,
+    '/competencies/new': `${T.common.new} ${T.nav.competencies}`,
   };
 
   function getTitle(pathname: string) {
