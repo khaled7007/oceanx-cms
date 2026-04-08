@@ -15,7 +15,6 @@ const STATUS_OPTIONS = Object.values(ReportStatus);
 
 const defaultForm: CreateReportDto = {
   title: { en: '' },
-  author: { en: '' },
   tags: [],
   status: ReportStatus.Draft,
   file_url: '',
@@ -43,7 +42,6 @@ export default function ReportForm() {
     if (existing) {
       setForm({
         title: existing.title,
-        author: existing.author,
         tags: existing.tags,
         status: existing.status,
         file_url: existing.file_url ?? '',
@@ -137,7 +135,7 @@ export default function ReportForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
+    <form onSubmit={handleSubmit} className="w-full space-y-6">
       <Link to="/reports" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
         <BackIcon className="w-4 h-4" /> {T.reports.back}
       </Link>
@@ -156,20 +154,6 @@ export default function ReportForm() {
             label={T.common.title_ar}
             value={form.title.ar ?? ''}
             onChange={(e) => set('title', { ...form.title, ar: e.target.value })}
-            dir="rtl"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label={T.common.author + ' (EN)'}
-            value={form.author.en}
-            onChange={(e) => set('author', { ...form.author, en: e.target.value })}
-          />
-          <Input
-            label={T.common.author + ' (AR)'}
-            value={form.author.ar ?? ''}
-            onChange={(e) => set('author', { ...form.author, ar: e.target.value })}
             dir="rtl"
           />
         </div>

@@ -95,7 +95,6 @@ export default function ReportsList() {
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-100">
                   <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.title}</th>
-                  <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.author}</th>
                   <th className="px-4 py-3 text-start font-medium text-gray-500">{T.reports.tags}</th>
                   <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.status}</th>
                   <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.updated}</th>
@@ -109,7 +108,6 @@ export default function ReportsList() {
                     <td className="px-4 py-3">
                       <p className="font-medium text-gray-900 truncate max-w-xs" dir={isAr ? 'rtl' : undefined}>{isAr ? (report.title.ar || report.title.en) : report.title.en}</p>
                     </td>
-                    <td className="px-4 py-3 text-gray-600" dir={isAr ? 'rtl' : undefined}>{isAr ? (report.author.ar || report.author.en || '—') : (report.author.en || '—')}</td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
                         {report.tags.slice(0, 3).map((tag) => (

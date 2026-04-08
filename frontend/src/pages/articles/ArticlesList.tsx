@@ -68,7 +68,6 @@ export default function ArticlesList() {
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100">
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.title}</th>
-                    <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.author}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.articles.category}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.status}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.articles.featured}</th>
@@ -82,7 +81,6 @@ export default function ArticlesList() {
                       <td className="px-4 py-3">
                         <p className="font-medium text-gray-900 truncate max-w-xs" dir={isAr ? 'rtl' : undefined}>{isAr ? (article.title.ar || article.title.en) : article.title.en}</p>
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{article.author || '—'}</td>
                       <td className="px-4 py-3 text-gray-600">{article.category || '—'}</td>
                       <td className="px-4 py-3"><button onClick={() => toggleMutation.mutate(article.id)}><StatusBadge status={article.status} /></button></td>
                       <td className="px-4 py-3">{article.featured && <Badge variant="info">★</Badge>}</td>
