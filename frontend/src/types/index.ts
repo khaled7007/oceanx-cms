@@ -38,7 +38,6 @@ export interface BilingualArray {
 export interface Report {
   id: string;
   title: Bilingual;
-  author: Bilingual;
   tags: string[];
   status: ReportStatus;
   file_url?: string;
@@ -48,7 +47,6 @@ export interface Report {
 
 export interface CreateReportDto {
   title: Bilingual;
-  author: Bilingual;
   tags: string[];
   status: ReportStatus;
   file_url?: string;
@@ -60,7 +58,6 @@ export interface Article {
   id: string;
   title: Bilingual;
   body?: Bilingual;
-  author?: string;
   category?: string;
   cover_image?: string;
   status: ContentStatus;

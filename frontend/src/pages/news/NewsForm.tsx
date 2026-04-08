@@ -58,13 +58,13 @@ export default function NewsForm() {
   if (isLoading) return <div className="flex justify-center p-8"><div className="animate-spin w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full" /></div>;
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-4xl space-y-6">
+    <form onSubmit={handleSubmit} className="w-full space-y-6">
       <Link to="/news" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700">
         <BackIcon className="w-4 h-4" /> {T.news.back}
       </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-5">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+        <div className="min-w-0 space-y-5">
           <div className="bg-white rounded-xl p-5 shadow-sm space-y-4">
             <h3 className="font-semibold text-gray-900">{T.common.content}</h3>
             <Input label={`${T.news.headline_en} *`} value={form.headline?.en || ''} onChange={(e) => set('headline', { ...form.headline, en: e.target.value })} required />
