@@ -77,7 +77,7 @@ export const articlesService = {
           (a) =>
             a.title.en.toLowerCase().includes(search) ||
             (a.title.ar ?? '').toLowerCase().includes(search) ||
-            (a.category ?? '').toLowerCase().includes(search),
+            a.categories.some((c) => c.toLowerCase().includes(search)),
         );
       const start = (pageNum - 1) * pageSize;
       return {
