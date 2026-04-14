@@ -22,7 +22,7 @@
 	],
 	"vars": {
 		"PUBLIC_URL": "https://pub-91b66163d3c74c7f8eb56ede89ceac26.r2.dev",
-		"ALLOWED_ORIGIN": "http://localhost:5174",
+		"ALLOWED_ORIGIN": "https://oceanx-backend-dev.web.app",
 		"FIREBASE_PROJECT_ID": "oceanx-backend-dev"
 	}
 }
