@@ -12,8 +12,8 @@ import toast from 'react-hot-toast';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const emptyService: Partial<Service> = {
-  title: { en: '' }, description: { en: '' },
-  icon_url: '', image_url: '', order_index: 0, active: true,
+  title: { en: '' }, overview: { en: '' }, description: { en: '' },
+  img: '', order_index: 0, active: true,
 };
 
 export default function ServiceForm() {
@@ -24,8 +24,7 @@ export default function ServiceForm() {
   const { T, lang } = useLang();
   const BackIcon = lang === 'ar' ? ArrowRightIcon : ArrowLeftIcon;
   const [form, setForm] = useState<Partial<Service>>(emptyService);
-  const [uploadingIcon, setUploadingIcon] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const { data: existing, isLoading } = useQuery({
     queryKey: ['service', id],
@@ -42,9 +41,9 @@ export default function ServiceForm() {
     onError: (err: unknown) => { toast.error((err as { response?: { data?: { error?: string } } })?.response?.data?.error || '!'); },
   });
 
-  const handleUpload = async (file: File, field: 'icon_url' | 'image_url', setUploading: (v: boolean) => void) => {
+  const handleUpload = async (file: File) => {
     setUploading(true);
-    try { const res = await mediaApi.upload(file, 'services'); set(field, res.data.url); toast.success(T.common.uploaded); }
+    try { const res = await mediaApi.upload(file, 'services'); set('img', res.data.url); toast.success(T.common.uploaded); }
     catch { toast.error(T.common.upload_failed); }
     finally { setUploading(false); }
   };
@@ -69,6 +68,8 @@ export default function ServiceForm() {
             <h3 className="font-semibold text-gray-900">{T.services.details}</h3>
             <Input label={`${T.common.title_en} *`} value={form.title?.en || ''} onChange={(e) => set('title', { ...form.title, en: e.target.value })} required />
             <Input label={T.common.title_ar} value={form.title?.ar || ''} onChange={(e) => set('title', { ...form.title, ar: e.target.value })} dir="rtl" />
+            <Textarea label={T.services.overview_en} value={form.overview?.en || ''} onChange={(e) => set('overview', { ...form.overview, en: e.target.value })} rows={3} />
+            <Textarea label={T.services.overview_ar} value={form.overview?.ar || ''} onChange={(e) => set('overview', { ...form.overview, ar: e.target.value })} rows={3} dir="rtl" />
             <Textarea label={T.services.desc_en} value={form.description?.en || ''} onChange={(e) => set('description', { ...form.description, en: e.target.value })} rows={4} />
             <Textarea label={T.services.desc_ar} value={form.description?.ar || ''} onChange={(e) => set('description', { ...form.description, ar: e.target.value })} rows={4} dir="rtl" />
           </div>
@@ -85,21 +86,15 @@ export default function ServiceForm() {
 
           <div className="bg-white rounded-xl p-4 shadow-sm space-y-4">
             <h3 className="font-semibold text-gray-900 text-sm">{T.common.media}</h3>
-            <FileUpload label={T.services.icon} accept="image/*,.svg"
-              onFile={(f) => handleUpload(f, 'icon_url', setUploadingIcon)}
-              preview={form.icon_url} onClear={() => set('icon_url', '')} hint={T.services.icon_hint} />
-            {uploadingIcon && <p className="text-xs text-brand-500 animate-pulse">{T.common.uploading}</p>}
-            <Input label={T.services.icon_url} value={form.icon_url || ''} onChange={(e) => set('icon_url', e.target.value)} placeholder={T.common.or_paste_url} />
-
-            <FileUpload label={T.services.feature_image} accept="image/*"
-              onFile={(f) => handleUpload(f, 'image_url', setUploadingImage)}
-              preview={form.image_url} onClear={() => set('image_url', '')} hint="JPG, PNG, WebP" />
-            {uploadingImage && <p className="text-xs text-brand-500 animate-pulse">{T.common.uploading}</p>}
-            <Input label={T.services.image_url} value={form.image_url || ''} onChange={(e) => set('image_url', e.target.value)} placeholder={T.common.or_paste_url} />
+            <FileUpload label={T.services.image} accept="image/*"
+              onFile={(f) => handleUpload(f)}
+              preview={form.img} onClear={() => set('img', '')} hint="JPG, PNG, WebP" />
+            {uploading && <p className="text-xs text-brand-500 animate-pulse">{T.common.uploading}</p>}
+            <Input label={T.services.image_url} value={form.img || ''} onChange={(e) => set('img', e.target.value)} placeholder={T.common.or_paste_url} />
           </div>
 
           <div className="flex gap-2">
-            <Button type="submit" loading={saveMutation.isPending} disabled={uploadingIcon || uploadingImage} className="flex-1">
+            <Button type="submit" loading={saveMutation.isPending} disabled={uploading} className="flex-1">
               {isEdit ? T.services.update : T.services.create}
             </Button>
             <Link to="/services"><Button type="button" variant="secondary">{T.common.cancel}</Button></Link>

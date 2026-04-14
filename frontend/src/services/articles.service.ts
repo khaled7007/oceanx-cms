@@ -44,7 +44,7 @@ function toArticle(id: string, data: Record<string, unknown>): Article {
     id,
     title: bil('title'),
     body: bil('body'),
-    category: data.category as string | undefined,
+    categories: Array.isArray(data.categories) ? (data.categories as string[]) : [],
     date: (data.date as string) ?? undefined,
     cover_image: data.cover_image as string | undefined,
     status: (data.status as ContentStatus) ?? 'draft',

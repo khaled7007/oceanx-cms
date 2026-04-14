@@ -41,9 +41,9 @@ function toService(id: string, data: Record<string, unknown>): Service {
   return {
     id,
     title: bil('title'),
+    overview: bil('overview'),
     description: bil('description'),
-    icon_url: data.icon_url as string | undefined,
-    image_url: data.image_url as string | undefined,
+    img: data.img as string | undefined,
     order_index: (data.order_index as number) ?? 0,
     active: (data.active as boolean) ?? true,
     created_at: toISO(data.created_at),
