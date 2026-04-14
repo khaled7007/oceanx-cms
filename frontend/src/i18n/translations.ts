@@ -8,10 +8,12 @@ const t = {
       reports: 'Reports',
       articles: 'Articles',
       pages: 'Pages',
-      media: 'Media Library',
+      media: 'Gallery',
       services: 'Services',
       news: 'News',
       competencies: 'Competencies',
+      partners: 'Partners',
+      categories: 'Categories',
       portal: 'CMS Portal',
     },
 
@@ -65,6 +67,7 @@ const t = {
       media: 'Media',
       content: 'Content',
       seo: 'SEO',
+      date: 'Date',
     },
 
     // ── Dashboard ───────────────────────────────────────────
@@ -83,13 +86,12 @@ const t = {
     reports: {
       new: 'New Report',
       search: 'Search reports…',
-      tags: 'Tags',
+      categories: 'Categories',
       publish_date: 'Publish Date',
       pdf: 'PDF Attachment',
       pdf_url: 'PDF URL',
       cover: 'Cover Image',
       cover_url: 'Cover Image URL',
-      tags_hint: 'Tags (comma-separated)',
       no_results: 'No reports found',
       no_results_sub: 'Create your first report to get started.',
       delete_title: 'Delete Report',
@@ -147,16 +149,21 @@ const t = {
     // ── Media ───────────────────────────────────────────────
     media: {
       drop_hint: 'Drop files here or click to upload',
-      drop_sub: 'Images (JPG, PNG, WebP, GIF, SVG) and PDFs — max 20 MB each',
+      drop_sub: 'Images (JPG, PNG, WebP, GIF, SVG) — max 20 MB each',
       search: 'Search files…',
       all_types: 'All types',
+      all_sources: 'All sources',
+      manual: 'Manual upload',
       images: 'Images',
       pdfs: 'PDFs',
       files: 'files',
       no_files: 'No files uploaded yet',
       delete_title: 'Delete File',
       delete_msg: (name: string) => `Delete "${name}"? This file may be used in content.`,
-      tags_placeholder: 'ocean, research, cover (comma-separated)',
+      visible: 'Visible',
+      hidden: 'Hidden',
+      show: 'Show',
+      hide: 'Hide',
     },
 
     // ── Services ────────────────────────────────────────────
@@ -240,6 +247,33 @@ const t = {
       back: 'Back to Competencies',
       details: 'Competency Details',
     },
+
+    // ── Partners ────────────────────────────────────────────
+    partners: {
+      new: 'New Partner',
+      search: 'Search partners…',
+      name_en: 'Name (English)',
+      name_ar: 'Name (Arabic)',
+      image: 'Image',
+      no_results: 'No partners found',
+      delete_title: 'Delete Partner',
+      delete_msg: (name: string) => `Delete "${name}"? This cannot be undone.`,
+      create: 'Create Partner',
+      update: 'Update Partner',
+    },
+
+    // ── Categories ──────────────────────────────────────────
+    categories: {
+      new: 'New Category',
+      search: 'Search categories…',
+      name_en: 'Name (English)',
+      name_ar: 'Name (Arabic)',
+      no_results: 'No categories found',
+      delete_title: 'Delete Category',
+      delete_msg: (name: string) => `Delete "${name}"? This cannot be undone.`,
+      create: 'Create Category',
+      update: 'Update Category',
+    },
   },
 
   // ════════════════════════════════════════════════════════
@@ -251,10 +285,12 @@ const t = {
       reports: 'التقارير',
       articles: 'المقالات',
       pages: 'الصفحات',
-      media: 'مكتبة الوسائط',
+      media: 'المعرض',
       services: 'الخدمات',
       news: 'الأخبار',
       competencies: 'الكفاءات',
+      partners: 'الشركاء',
+      categories: 'التصنيفات',
       portal: 'بوابة الإدارة',
     },
 
@@ -306,6 +342,7 @@ const t = {
       media: 'الوسائط',
       content: 'المحتوى',
       seo: 'تحسين محركات البحث',
+      date: 'التاريخ',
     },
 
     dashboard: {
@@ -322,13 +359,12 @@ const t = {
     reports: {
       new: 'تقرير جديد',
       search: 'البحث في التقارير…',
-      tags: 'الوسوم',
+      categories: 'التصنيفات',
       publish_date: 'تاريخ النشر',
       pdf: 'مرفق PDF',
       pdf_url: 'رابط PDF',
       cover: 'صورة الغلاف',
       cover_url: 'رابط صورة الغلاف',
-      tags_hint: 'الوسوم (مفصولة بفاصلة)',
       no_results: 'لا توجد تقارير',
       no_results_sub: 'أنشئ أول تقرير للبدء.',
       delete_title: 'حذف التقرير',
@@ -383,16 +419,21 @@ const t = {
 
     media: {
       drop_hint: 'اسحب الملفات هنا أو انقر للرفع',
-      drop_sub: 'صور (JPG، PNG، WebP، GIF، SVG) وملفات PDF — 20 ميجابايت كحد أقصى',
+      drop_sub: 'صور (JPG، PNG، WebP، GIF، SVG) — 20 ميجابايت كحد أقصى',
       search: 'البحث في الملفات…',
       all_types: 'جميع الأنواع',
+      all_sources: 'جميع المصادر',
+      manual: 'رفع يدوي',
       images: 'الصور',
       pdfs: 'ملفات PDF',
       files: 'ملف',
       no_files: 'لم يتم رفع أي ملفات بعد',
       delete_title: 'حذف الملف',
       delete_msg: (name: string) => `حذف "${name}"؟ قد يكون هذا الملف مستخدماً في محتوى آخر.`,
-      tags_placeholder: 'محيط، بحث، غلاف (مفصولة بفاصلة)',
+      visible: 'مرئي',
+      hidden: 'مخفي',
+      show: 'إظهار',
+      hide: 'إخفاء',
     },
 
     services: {
@@ -473,6 +514,33 @@ const t = {
       update: 'تحديث الكفاءة',
       back: 'رجوع للكفاءات',
       details: 'تفاصيل الكفاءة',
+    },
+
+    // ── Partners ────────────────────────────────────────────
+    partners: {
+      new: 'شريك جديد',
+      search: 'البحث في الشركاء…',
+      name_en: 'الاسم (إنجليزي)',
+      name_ar: 'الاسم (عربي)',
+      image: 'الصورة',
+      no_results: 'لا يوجد شركاء',
+      delete_title: 'حذف الشريك',
+      delete_msg: (name: string) => `حذف "${name}"؟ لا يمكن التراجع.`,
+      create: 'إنشاء شريك',
+      update: 'تحديث الشريك',
+    },
+
+    // ── Categories ──────────────────────────────────────────
+    categories: {
+      new: 'تصنيف جديد',
+      search: 'البحث في التصنيفات…',
+      name_en: 'الاسم (إنجليزي)',
+      name_ar: 'الاسم (عربي)',
+      no_results: 'لا توجد تصنيفات',
+      delete_title: 'حذف التصنيف',
+      delete_msg: (name: string) => `حذف "${name}"؟ لا يمكن التراجع.`,
+      create: 'إنشاء تصنيف',
+      update: 'تحديث التصنيف',
     },
   },
 } as const;

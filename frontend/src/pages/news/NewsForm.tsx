@@ -14,7 +14,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const emptyNews: Partial<NewsItem> = {
   headline: { en: '' }, body: { en: '' },
-  source: '', publish_date: '', cover_image: '', status: 'draft',
+  source: '', date: '', publish_date: '', cover_image: '', status: 'draft',
 };
 
 export default function NewsForm() {
@@ -44,7 +44,7 @@ export default function NewsForm() {
 
   const handleUploadCover = async (file: File) => {
     setUploading(true);
-    try { const res = await mediaApi.upload(file, ['cover', 'news']); set('cover_image', res.data.url); toast.success(T.common.uploaded); }
+    try { const res = await mediaApi.upload(file, 'news'); set('cover_image', res.data.url); toast.success(T.common.uploaded); }
     catch { toast.error(T.common.upload_failed); }
     finally { setUploading(false); }
   };
@@ -80,6 +80,7 @@ export default function NewsForm() {
             <Select label={T.common.status} value={form.status || 'draft'} onChange={(e) => set('status', e.target.value)}
               options={[{ value: 'draft', label: T.common.draft }, { value: 'published', label: T.common.published }]} />
             <Input label={T.news.source} value={form.source || ''} onChange={(e) => set('source', e.target.value)} placeholder={T.news.source_hint} />
+            <Input label={T.common.date} type="date" value={form.date || ''} onChange={(e) => set('date', e.target.value)} />
             <Input label={T.news.publish_date} type="date" value={form.publish_date || ''} onChange={(e) => set('publish_date', e.target.value)} />
           </div>
 

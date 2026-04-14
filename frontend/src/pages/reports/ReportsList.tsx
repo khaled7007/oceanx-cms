@@ -11,7 +11,7 @@ import { ConfirmModal } from '../../components/ui/Modal';
 import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
 import toast from 'react-hot-toast';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 
 export default function ReportsList() {
@@ -95,7 +95,8 @@ export default function ReportsList() {
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-100">
                   <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.title}</th>
-                  <th className="px-4 py-3 text-start font-medium text-gray-500">{T.reports.tags}</th>
+                  <th className="px-4 py-3 text-start font-medium text-gray-500">{T.reports.categories}</th>
+                  <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.date}</th>
                   <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.status}</th>
                   <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.updated}</th>
                   <th className="px-4 py-3 text-start font-medium text-gray-500">{T.reports.file}</th>
@@ -110,13 +111,16 @@ export default function ReportsList() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
-                        {report.tags.slice(0, 3).map((tag) => (
-                          <span key={tag} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">{tag}</span>
+                        {report.categories.slice(0, 3).map((cat) => (
+                          <span key={cat} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">{cat}</span>
                         ))}
-                        {report.tags.length > 3 && (
-                          <span className="px-1.5 py-0.5 text-gray-400 text-xs">+{report.tags.length - 3}</span>
+                        {report.categories.length > 3 && (
+                          <span className="px-1.5 py-0.5 text-gray-400 text-xs">+{report.categories.length - 3}</span>
                         )}
                       </div>
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 text-xs">
+                      {report.date ? format(new Date(report.date), 'MMM d, yyyy') : '—'}
                     </td>
                     <td className="px-4 py-3">
                       <button onClick={() => toggleMutation.mutate(report.id)} title={T.common.status}>

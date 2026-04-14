@@ -69,6 +69,7 @@ export default function NewsList() {
                   <tr className="bg-gray-50 border-b border-gray-100">
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.news.headline}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.news.source}</th>
+                    <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.date}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.news.publish_date}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.status}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.updated}</th>
@@ -82,6 +83,9 @@ export default function NewsList() {
                         <p className="font-medium text-gray-900 truncate max-w-xs" dir={isAr ? 'rtl' : undefined}>{isAr ? (item.headline.ar || item.headline.en) : item.headline.en}</p>
                       </td>
                       <td className="px-4 py-3 text-gray-600">{item.source || '—'}</td>
+                      <td className="px-4 py-3 text-gray-600 text-xs">
+                        {item.date ? format(new Date(item.date), 'MMM d, yyyy') : '—'}
+                      </td>
                       <td className="px-4 py-3 text-gray-600 text-xs">
                         {item.publish_date ? format(new Date(item.publish_date), 'MMM d, yyyy') : '—'}
                       </td>

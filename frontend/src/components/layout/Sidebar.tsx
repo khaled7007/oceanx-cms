@@ -8,6 +8,8 @@ import {
   WrenchScrewdriverIcon,
   MegaphoneIcon,
   UserGroupIcon,
+  BuildingOffice2Icon,
+  TagIcon,
 } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
 
@@ -23,6 +25,8 @@ export default function Sidebar() {
     { to: '/services',  label: T.nav.services,   icon: WrenchScrewdriverIcon },
     { to: '/news',      label: T.nav.news,        icon: MegaphoneIcon },
     { to: '/competencies', label: T.nav.competencies, icon: UserGroupIcon },
+    { to: '/partners',  label: T.nav.partners,   icon: BuildingOffice2Icon },
+    { to: '/categories', label: T.nav.categories, icon: TagIcon },
   ];
 
   return (
