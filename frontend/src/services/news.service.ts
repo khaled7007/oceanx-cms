@@ -45,6 +45,7 @@ function toNewsItem(id: string, data: Record<string, unknown>): NewsItem {
     headline: bil('headline'),
     body: bil('body'),
     source: data.source as string | undefined,
+    date: (data.date as string) ?? undefined,
     publish_date: data.publish_date as string | undefined,
     cover_image: data.cover_image as string | undefined,
     status: (data.status as ContentStatus) ?? 'draft',

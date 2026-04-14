@@ -14,7 +14,7 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const emptyArticle: Partial<Article> = {
   title: { en: '' }, body: { en: '' },
-  category: '', cover_image: '', status: 'draft', featured: false,
+  category: '', date: '', cover_image: '', status: 'draft', featured: false,
 };
 const CATEGORIES = ['Research', 'Science', 'Climate', 'Conservation', 'Technology', 'Policy', 'Other'];
 
@@ -45,7 +45,7 @@ export default function ArticleForm() {
 
   const handleUploadCover = async (file: File) => {
     setUploading(true);
-    try { const res = await mediaApi.upload(file, ['cover']); set('cover_image', res.data.url); toast.success(T.common.uploaded); }
+    try { const res = await mediaApi.upload(file, 'articles'); set('cover_image', res.data.url); toast.success(T.common.uploaded); }
     catch { toast.error(T.common.upload_failed); }
     finally { setUploading(false); }
   };
@@ -82,6 +82,7 @@ export default function ArticleForm() {
               options={[{ value: 'draft', label: T.common.draft }, { value: 'published', label: T.common.published }]} />
             <Select label={T.articles.category} value={form.category || ''} onChange={(e) => set('category', e.target.value)}
               options={[{ value: '', label: T.articles.select_category }, ...CATEGORIES.map((c) => ({ value: c, label: c }))]} />
+            <Input label={T.common.date} type="date" value={form.date || ''} onChange={(e) => set('date', e.target.value)} />
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.featured || false} onChange={(e) => set('featured', e.target.checked)}
                 className="w-4 h-4 text-brand-500 rounded focus:ring-brand-500" />

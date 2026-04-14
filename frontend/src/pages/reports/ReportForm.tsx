@@ -2,20 +2,23 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { reportsApi } from '../../api/reports';
+import { categoriesApi } from '../../api/categories';
 import { CreateReportDto, ReportStatus } from '../../types';
 import Button from '../../components/ui/Button';
 import { Input, Select } from '../../components/ui/Input';
 import FileUpload from '../../components/ui/FileUpload';
 import { useLang } from '../../contexts/LanguageContext';
 import { uploadFile, deleteFile } from '../../services/storage.service';
+import { galleryApi } from '../../api/gallery';
 import toast from 'react-hot-toast';
-import { ArrowLeftIcon, ArrowRightIcon, DocumentArrowUpIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowRightIcon, DocumentArrowUpIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const STATUS_OPTIONS = Object.values(ReportStatus);
 
 const defaultForm: CreateReportDto = {
   title: { en: '' },
-  tags: [],
+  categories: [],
+  date: '',
   status: ReportStatus.Draft,
   file_url: '',
 };
@@ -26,10 +29,10 @@ export default function ReportForm() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { T, lang } = useLang();
-  const BackIcon = lang === 'ar' ? ArrowRightIcon : ArrowLeftIcon;
+  const isAr = lang === 'ar';
+  const BackIcon = isAr ? ArrowRightIcon : ArrowLeftIcon;
 
   const [form, setForm] = useState<CreateReportDto>(defaultForm);
-  const [tagInput, setTagInput] = useState('');
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
   const { data: existing, isLoading } = useQuery({
@@ -38,15 +41,20 @@ export default function ReportForm() {
     enabled: isEdit,
   });
 
+  const { data: allCategories } = useQuery({
+    queryKey: ['categories-all'],
+    queryFn: () => categoriesApi.listAll().then((r) => r.data),
+  });
+
   useEffect(() => {
     if (existing) {
       setForm({
         title: existing.title,
-        tags: existing.tags,
+        categories: existing.categories,
+        date: existing.date ?? '',
         status: existing.status,
         file_url: existing.file_url ?? '',
       });
-      setTagInput('');
     }
   }, [existing]);
 
@@ -58,6 +66,7 @@ export default function ReportForm() {
     try {
       const path = `reports/${Date.now()}_${file.name}`;
       const url = await uploadFile(file, path, setUploadProgress);
+      await galleryApi.addToGallery(url, 'reports');
       set('file_url', url);
       toast.success(T.common.uploaded);
     } catch {
@@ -92,33 +101,18 @@ export default function ReportForm() {
     },
   });
 
-  const addTag = () => {
-    const value = tagInput.trim();
-    if (value && !form.tags.includes(value)) {
-      set('tags', [...form.tags, value]);
-    }
-    setTagInput('');
-  };
-
-  const removeTag = (index: number) => {
-    set('tags', form.tags.filter((_, i) => i !== index));
-  };
-
-  const handleTagKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addTag();
+  const toggleCategory = (catName: string) => {
+    if (form.categories.includes(catName)) {
+      set('categories', form.categories.filter((c) => c !== catName));
+    } else {
+      set('categories', [...form.categories, catName]);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.en.trim()) { toast.error('English title is required'); return; }
-    // Include any unsaved tag input
-    const finalTags = tagInput.trim() && !form.tags.includes(tagInput.trim())
-      ? [...form.tags, tagInput.trim()]
-      : form.tags;
-    saveMutation.mutate({ ...form, tags: finalTags });
+    saveMutation.mutate(form);
   };
 
   const statusOptions = STATUS_OPTIONS.map((s) => ({
@@ -158,41 +152,34 @@ export default function ReportForm() {
           />
         </div>
 
+        <Input
+          label={T.common.date}
+          type="date"
+          value={form.date ?? ''}
+          onChange={(e) => set('date', e.target.value)}
+        />
+
         <div className="space-y-1">
-          <label className="block text-sm font-medium text-gray-700">{T.reports.tags_hint}</label>
+          <label className="block text-sm font-medium text-gray-700">{T.reports.categories}</label>
           <div className="flex flex-wrap gap-2">
-            {form.tags.map((tag, i) => (
-              <span
-                key={i}
-                className="inline-flex items-center gap-1 px-2.5 py-1 bg-brand-50 text-brand-700 rounded-lg text-sm"
-              >
-                {tag}
-                <button
-                  type="button"
-                  onClick={() => removeTag(i)}
-                  className="text-brand-400 hover:text-red-500"
+            {(allCategories ?? []).map((cat) => {
+              const selected = form.categories.includes(cat.name.en);
+              return (
+                <button key={cat.id} type="button" onClick={() => toggleCategory(cat.name.en)}
+                  className={`px-2.5 py-1 rounded-lg text-sm border transition-colors ${
+                    selected
+                      ? 'bg-brand-50 border-brand-300 text-brand-700'
+                      : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                  }`}
                 >
-                  <XMarkIcon className="w-3.5 h-3.5" />
+                  {isAr ? (cat.name.ar || cat.name.en) : cat.name.en}
+                  {selected && <XMarkIcon className="w-3.5 h-3.5 inline ml-1" />}
                 </button>
-              </span>
-            ))}
-            <div className="flex items-center gap-1">
-              <input
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleTagKeyDown}
-                placeholder={form.tags.length === 0 ? 'Add a tag...' : ''}
-                className="px-2.5 py-1 text-sm border border-gray-200 rounded-lg w-32 focus:outline-none focus:ring-2 focus:ring-brand-500"
-              />
-              <button
-                type="button"
-                onClick={addTag}
-                disabled={!tagInput.trim()}
-                className="p-1 rounded-lg text-white bg-brand-500 hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <PlusIcon className="w-4 h-4" />
-              </button>
-            </div>
+              );
+            })}
+            {(!allCategories || allCategories.length === 0) && (
+              <span className="text-xs text-gray-400">{T.categories.no_results}</span>
+            )}
           </div>
         </div>
 

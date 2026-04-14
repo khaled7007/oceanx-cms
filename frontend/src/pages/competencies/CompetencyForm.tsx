@@ -59,7 +59,7 @@ export default function CompetencyForm() {
 
   const handleUpload = async (file: File) => {
     setUploadingPhoto(true);
-    try { const res = await mediaApi.upload(file, ['competency']); set('photo', res.data.url); toast.success(T.common.uploaded); }
+    try { const res = await mediaApi.upload(file, 'competencies'); set('photo', res.data.url); toast.success(T.common.uploaded); }
     catch { toast.error(T.common.upload_failed); }
     finally { setUploadingPhoto(false); }
   };

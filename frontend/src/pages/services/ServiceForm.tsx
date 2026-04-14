@@ -44,7 +44,7 @@ export default function ServiceForm() {
 
   const handleUpload = async (file: File, field: 'icon_url' | 'image_url', setUploading: (v: boolean) => void) => {
     setUploading(true);
-    try { const res = await mediaApi.upload(file, ['service']); set(field, res.data.url); toast.success(T.common.uploaded); }
+    try { const res = await mediaApi.upload(file, 'services'); set(field, res.data.url); toast.success(T.common.uploaded); }
     catch { toast.error(T.common.upload_failed); }
     finally { setUploading(false); }
   };

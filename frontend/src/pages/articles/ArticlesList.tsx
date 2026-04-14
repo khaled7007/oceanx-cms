@@ -10,7 +10,7 @@ import { ConfirmModal } from '../../components/ui/Modal';
 import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
 import toast from 'react-hot-toast';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 
 export default function ArticlesList() {
@@ -69,6 +69,7 @@ export default function ArticlesList() {
                   <tr className="bg-gray-50 border-b border-gray-100">
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.title}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.articles.category}</th>
+                    <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.date}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.status}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.articles.featured}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.updated}</th>
@@ -82,6 +83,9 @@ export default function ArticlesList() {
                         <p className="font-medium text-gray-900 truncate max-w-xs" dir={isAr ? 'rtl' : undefined}>{isAr ? (article.title.ar || article.title.en) : article.title.en}</p>
                       </td>
                       <td className="px-4 py-3 text-gray-600">{article.category || '—'}</td>
+                      <td className="px-4 py-3 text-gray-600 text-xs">
+                        {article.date ? format(new Date(article.date), 'MMM d, yyyy') : '—'}
+                      </td>
                       <td className="px-4 py-3"><button onClick={() => toggleMutation.mutate(article.id)}><StatusBadge status={article.status} /></button></td>
                       <td className="px-4 py-3">{article.featured && <Badge variant="info">★</Badge>}</td>
                       <td className="px-4 py-3 text-gray-400 text-xs">

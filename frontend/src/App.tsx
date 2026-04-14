@@ -17,6 +17,8 @@ import NewsList from './pages/news/NewsList';
 import NewsForm from './pages/news/NewsForm';
 import CompetenciesList from './pages/competencies/CompetenciesList';
 import CompetencyForm from './pages/competencies/CompetencyForm';
+import PartnersList from './pages/partners/PartnersList';
+import CategoriesList from './pages/categories/CategoriesList';
 
 function ProtectedRoutes() {
   const { user, isLoading } = useAuth();
@@ -46,6 +48,8 @@ function ProtectedRoutes() {
         <Route path="/competencies" element={<CompetenciesList />} />
         <Route path="/competencies/new" element={<CompetencyForm />} />
         <Route path="/competencies/:id/edit" element={<CompetencyForm />} />
+        <Route path="/partners" element={<PartnersList />} />
+        <Route path="/categories" element={<CategoriesList />} />
       </Routes>
     </Layout>
   );

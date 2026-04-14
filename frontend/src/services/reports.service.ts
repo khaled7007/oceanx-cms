@@ -50,7 +50,8 @@ function toReport(id: string, data: Record<string, unknown>): Report {
   return {
     id,
     title: bil('title'),
-    tags: (data.tags as string[]) ?? [],
+    categories: (data.categories as string[]) ?? [],
+    date: (data.date as string) ?? undefined,
     status: (data.status as ReportStatus) ?? ReportStatus.Draft,
     file_url: (data.file_url as string) ?? undefined,
     created_at: toISO(data.created_at),
@@ -83,7 +84,7 @@ export const reportsService = {
           (r) =>
             r.title.en.toLowerCase().includes(search) ||
             (r.title.ar ?? '').toLowerCase().includes(search) ||
-            r.tags.some((t) => t.toLowerCase().includes(search)),
+            r.categories.some((c) => c.toLowerCase().includes(search)),
         );
       const start = (pageNum - 1) * pageSize;
       return {

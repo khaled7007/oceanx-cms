@@ -38,7 +38,8 @@ export interface BilingualArray {
 export interface Report {
   id: string;
   title: Bilingual;
-  tags: string[];
+  categories: string[];
+  date?: string;
   status: ReportStatus;
   file_url?: string;
   created_at: string;
@@ -47,7 +48,8 @@ export interface Report {
 
 export interface CreateReportDto {
   title: Bilingual;
-  tags: string[];
+  categories: string[];
+  date?: string;
   status: ReportStatus;
   file_url?: string;
 }
@@ -59,6 +61,7 @@ export interface Article {
   title: Bilingual;
   body?: Bilingual;
   category?: string;
+  date?: string;
   cover_image?: string;
   status: ContentStatus;
   featured: boolean;
@@ -93,7 +96,8 @@ export interface Media {
   url: string;
   mime_type?: string;
   size?: number;
-  tags?: string[];
+  uploaded_from: string;
+  visible: boolean;
   created_at: string;
 }
 
@@ -114,6 +118,7 @@ export interface NewsItem {
   headline: Bilingual;
   body?: Bilingual;
   source?: string;
+  date?: string;
   publish_date?: string;
   cover_image?: string;
   status: ContentStatus;
@@ -155,4 +160,27 @@ export interface DashboardStats {
     status: string;
     created_at: string;
   }>;
+}
+
+export interface Partner {
+  id: string;
+  name: Bilingual;
+  img: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Category {
+  id: string;
+  name: Bilingual;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GalleryItem {
+  id: string;
+  img: string;
+  uploaded_from: string;
+  visible: boolean;
+  created_at: string;
 }
