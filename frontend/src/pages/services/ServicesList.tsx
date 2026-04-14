@@ -57,7 +57,7 @@ export default function ServicesList() {
                   <tr className="bg-gray-50 border-b border-gray-100">
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.services.order}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.title}</th>
-                    <th className="px-4 py-3 text-start font-medium text-gray-500">{T.services.icon}</th>
+                    <th className="px-4 py-3 text-start font-medium text-gray-500">{T.services.image}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.status}</th>
                     <th className="px-4 py-3 text-end font-medium text-gray-500">{T.common.actions}</th>
                   </tr>
@@ -70,7 +70,7 @@ export default function ServicesList() {
                         <p className="font-medium text-gray-900" dir={isAr ? 'rtl' : undefined}>{isAr ? (service.title.ar || service.title.en) : service.title.en}</p>
                       </td>
                       <td className="px-4 py-3">
-                        {service.icon_url ? <img src={service.icon_url} alt="" className="w-8 h-8 object-contain" /> : <span className="text-gray-300 text-xs">—</span>}
+                        {service.img ? <img src={service.img} alt="" className="w-8 h-8 object-contain" /> : <span className="text-gray-300 text-xs">—</span>}
                       </td>
                       <td className="px-4 py-3">
                         <button onClick={() => toggleMutation.mutate(service.id)}>

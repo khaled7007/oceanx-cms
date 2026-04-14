@@ -68,7 +68,7 @@ export default function ArticlesList() {
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-100">
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.title}</th>
-                    <th className="px-4 py-3 text-start font-medium text-gray-500">{T.articles.category}</th>
+                    <th className="px-4 py-3 text-start font-medium text-gray-500">{T.articles.categories}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.date}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.common.status}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.articles.featured}</th>
@@ -82,7 +82,16 @@ export default function ArticlesList() {
                       <td className="px-4 py-3">
                         <p className="font-medium text-gray-900 truncate max-w-xs" dir={isAr ? 'rtl' : undefined}>{isAr ? (article.title.ar || article.title.en) : article.title.en}</p>
                       </td>
-                      <td className="px-4 py-3 text-gray-600">{article.category || '—'}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex flex-wrap gap-1">
+                          {article.categories.slice(0, 3).map((cat) => (
+                            <span key={cat} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">{cat}</span>
+                          ))}
+                          {article.categories.length > 3 && (
+                            <span className="px-1.5 py-0.5 text-gray-400 text-xs">+{article.categories.length - 3}</span>
+                          )}
+                        </div>
+                      </td>
                       <td className="px-4 py-3 text-gray-600 text-xs">
                         {article.date ? format(new Date(article.date), 'MMM d, yyyy') : '—'}
                       </td>

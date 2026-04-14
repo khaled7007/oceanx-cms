@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { articlesApi } from '../../api/articles';
+import { categoriesApi } from '../../api/categories';
 import { mediaApi } from '../../api/media';
 import { Article } from '../../types';
 import Button from '../../components/ui/Button';
@@ -10,13 +11,12 @@ import RichTextEditor from '../../components/ui/RichTextEditor';
 import FileUpload from '../../components/ui/FileUpload';
 import { useLang } from '../../contexts/LanguageContext';
 import toast from 'react-hot-toast';
-import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowRightIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const emptyArticle: Partial<Article> = {
   title: { en: '' }, body: { en: '' },
-  category: '', date: '', cover_image: '', status: 'draft', featured: false,
+  categories: [], date: '', cover_image: '', status: 'draft', featured: false,
 };
-const CATEGORIES = ['Research', 'Science', 'Climate', 'Conservation', 'Technology', 'Policy', 'Other'];
 
 export default function ArticleForm() {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +24,7 @@ export default function ArticleForm() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { T, lang } = useLang();
+  const isAr = lang === 'ar';
   const BackIcon = lang === 'ar' ? ArrowRightIcon : ArrowLeftIcon;
   const [form, setForm] = useState<Partial<Article>>(emptyArticle);
   const [uploading, setUploading] = useState(false);
@@ -32,6 +33,11 @@ export default function ArticleForm() {
     queryKey: ['article', id],
     queryFn: () => articlesApi.get(id!).then((r) => r.data),
     enabled: isEdit,
+  });
+
+  const { data: allCategories } = useQuery({
+    queryKey: ['categories-all'],
+    queryFn: () => categoriesApi.listAll().then((r) => r.data),
   });
 
   useEffect(() => { if (existing) setForm(existing); }, [existing]);
@@ -48,6 +54,15 @@ export default function ArticleForm() {
     try { const res = await mediaApi.upload(file, 'articles'); set('cover_image', res.data.url); toast.success(T.common.uploaded); }
     catch { toast.error(T.common.upload_failed); }
     finally { setUploading(false); }
+  };
+
+  const toggleCategory = (catName: string) => {
+    const cats = form.categories ?? [];
+    if (cats.includes(catName)) {
+      set('categories', cats.filter((c) => c !== catName));
+    } else {
+      set('categories', [...cats, catName]);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -80,8 +95,29 @@ export default function ArticleForm() {
             <h3 className="font-semibold text-gray-900 text-sm">{T.common.settings}</h3>
             <Select label={T.common.status} value={form.status || 'draft'} onChange={(e) => set('status', e.target.value)}
               options={[{ value: 'draft', label: T.common.draft }, { value: 'published', label: T.common.published }]} />
-            <Select label={T.articles.category} value={form.category || ''} onChange={(e) => set('category', e.target.value)}
-              options={[{ value: '', label: T.articles.select_category }, ...CATEGORIES.map((c) => ({ value: c, label: c }))]} />
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">{T.articles.categories}</label>
+              <div className="flex flex-wrap gap-2">
+                {(allCategories ?? []).map((cat) => {
+                  const selected = (form.categories ?? []).includes(cat.name.en);
+                  return (
+                    <button key={cat.id} type="button" onClick={() => toggleCategory(cat.name.en)}
+                      className={`px-2.5 py-1 rounded-lg text-sm border transition-colors ${
+                        selected
+                          ? 'bg-brand-50 border-brand-300 text-brand-700'
+                          : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                      }`}
+                    >
+                      {isAr ? (cat.name.ar || cat.name.en) : cat.name.en}
+                      {selected && <XMarkIcon className="w-3.5 h-3.5 inline ml-1" />}
+                    </button>
+                  );
+                })}
+                {(!allCategories || allCategories.length === 0) && (
+                  <span className="text-xs text-gray-400">{T.categories.no_results}</span>
+                )}
+              </div>
+            </div>
             <Input label={T.common.date} type="date" value={form.date || ''} onChange={(e) => set('date', e.target.value)} />
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={form.featured || false} onChange={(e) => set('featured', e.target.checked)}

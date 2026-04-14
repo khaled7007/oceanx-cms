@@ -60,7 +60,7 @@ export interface Article {
   id: string;
   title: Bilingual;
   body?: Bilingual;
-  category?: string;
+  categories: string[];
   date?: string;
   cover_image?: string;
   status: ContentStatus;
@@ -104,9 +104,9 @@ export interface Media {
 export interface Service {
   id: string;
   title: Bilingual;
+  overview?: Bilingual;
   description?: Bilingual;
-  icon_url?: string;
-  image_url?: string;
+  img?: string;
   order_index: number;
   active: boolean;
   created_at: string;
