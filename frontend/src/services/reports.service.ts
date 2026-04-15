@@ -53,6 +53,7 @@ function toReport(id: string, data: Record<string, unknown>): Report {
     categories: (data.categories as string[]) ?? [],
     date: (data.date as string) ?? undefined,
     status: (data.status as ReportStatus) ?? ReportStatus.Draft,
+    cover_image: (data.cover_image as string) ?? undefined,
     file_url: (data.file_url as string) ?? undefined,
     created_at: toISO(data.created_at),
     updated_at: toISO(data.updated_at),

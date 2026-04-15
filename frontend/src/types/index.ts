@@ -41,6 +41,7 @@ export interface Report {
   categories: string[];
   date?: string;
   status: ReportStatus;
+  cover_image?: string;
   file_url?: string;
   created_at: string;
   updated_at: string;
@@ -51,6 +52,7 @@ export interface CreateReportDto {
   categories: string[];
   date?: string;
   status: ReportStatus;
+  cover_image?: string;
   file_url?: string;
 }
 

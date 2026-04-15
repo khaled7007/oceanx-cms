@@ -9,6 +9,7 @@ import { Input, Select } from '../../components/ui/Input';
 import FileUpload from '../../components/ui/FileUpload';
 import { useLang } from '../../contexts/LanguageContext';
 import { uploadFile, deleteFile } from '../../services/storage.service';
+import { mediaApi } from '../../api/media';
 import { galleryApi } from '../../api/gallery';
 import toast from 'react-hot-toast';
 import { ArrowLeftIcon, ArrowRightIcon, DocumentArrowUpIcon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -20,6 +21,7 @@ const defaultForm: CreateReportDto = {
   categories: [],
   date: '',
   status: ReportStatus.Draft,
+  cover_image: '',
   file_url: '',
 };
 
@@ -34,6 +36,7 @@ export default function ReportForm() {
 
   const [form, setForm] = useState<CreateReportDto>(defaultForm);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
 
   const { data: existing, isLoading } = useQuery({
     queryKey: ['report', id],
@@ -53,6 +56,7 @@ export default function ReportForm() {
         categories: existing.categories,
         date: existing.date ?? '',
         status: existing.status,
+        cover_image: existing.cover_image ?? '',
         file_url: existing.file_url ?? '',
       });
     }
@@ -73,6 +77,19 @@ export default function ReportForm() {
       toast.error(T.common.upload_failed);
     } finally {
       setUploadProgress(null);
+    }
+  };
+
+  const handleCoverUpload = async (file: File) => {
+    setUploadingCover(true);
+    try {
+      const res = await mediaApi.upload(file, 'reports');
+      set('cover_image', res.data.url);
+      toast.success(T.common.uploaded);
+    } catch {
+      toast.error(T.common.upload_failed);
+    } finally {
+      setUploadingCover(false);
     }
   };
 
@@ -191,6 +208,14 @@ export default function ReportForm() {
         />
       </div>
 
+      <div className="bg-white rounded-xl p-5 shadow-sm space-y-3">
+        <h3 className="font-semibold text-gray-900">{T.reports.cover}</h3>
+        <FileUpload accept="image/*" onFile={handleCoverUpload} preview={form.cover_image}
+          onClear={() => set('cover_image', '')} hint="JPG, PNG, WebP" />
+        {uploadingCover && <p className="text-xs text-brand-500 animate-pulse">{T.common.uploading}</p>}
+        <Input label={T.reports.cover_url} value={form.cover_image || ''} onChange={(e) => set('cover_image', e.target.value)} placeholder={T.common.or_paste_url} />
+      </div>
+
       <div className="bg-white rounded-xl p-5 shadow-sm space-y-4">
         <h3 className="font-semibold text-gray-900 flex items-center gap-2">
           <DocumentArrowUpIcon className="w-5 h-5 text-gray-400" />
@@ -243,7 +268,7 @@ export default function ReportForm() {
       </div>
 
       <div className="flex gap-2">
-        <Button type="submit" loading={saveMutation.isPending} disabled={uploadProgress !== null} className="flex-1">
+        <Button type="submit" loading={saveMutation.isPending} disabled={uploadProgress !== null || uploadingCover} className="flex-1">
           {isEdit ? T.reports.update : T.reports.create}
         </Button>
         <Link to="/reports">
