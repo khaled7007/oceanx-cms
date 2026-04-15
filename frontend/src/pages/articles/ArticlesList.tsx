@@ -7,11 +7,12 @@ import Button from '../../components/ui/Button';
 import Badge, { StatusBadge } from '../../components/ui/Badge';
 import Pagination from '../../components/ui/Pagination';
 import { ConfirmModal } from '../../components/ui/Modal';
-import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow, format } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
+import { syncArticlesFromFolder } from '../../services/syncArticles';
 
 export default function ArticlesList() {
   const qc = useQueryClient();
@@ -22,6 +23,8 @@ export default function ArticlesList() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'' | ContentStatus>('');
   const [deleteTarget, setDeleteTarget] = useState<Article | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['articles', page, search, status],
@@ -38,6 +41,27 @@ export default function ArticlesList() {
     mutationFn: (id: string) => articlesApi.toggleStatus(id),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['articles'] }); },
   });
+
+  const handleSync = async () => {
+    setSyncing(true);
+    setSyncStatus('Starting…');
+    try {
+      const result = await syncArticlesFromFolder((p) => {
+        setSyncStatus(`${p.current}/${p.total} — ${p.currentName}`);
+      });
+      toast.success(`Synced ${result.total - result.errors.length}/${result.total} articles`);
+      if (result.errors.length) {
+        console.warn('Sync errors:', result.errors);
+        toast.error(`${result.errors.length} errors — check console`);
+      }
+      qc.invalidateQueries({ queryKey: ['articles'] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Sync failed');
+    } finally {
+      setSyncing(false);
+      setSyncStatus(null);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -56,7 +80,13 @@ export default function ArticlesList() {
             <option value="draft">{T.common.draft}</option>
           </select>
         </div>
-        <Link to="/articles/new"><Button><PlusIcon className="w-4 h-4" /> {T.articles.new}</Button></Link>
+        <div className="flex gap-2 items-center">
+          {syncStatus && <span className="text-xs text-gray-500 animate-pulse">{syncStatus}</span>}
+          <Button variant="secondary" onClick={handleSync} disabled>
+            <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> Sync Articles
+          </Button>
+          <Link to="/articles/new"><Button><PlusIcon className="w-4 h-4" /> {T.articles.new}</Button></Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">

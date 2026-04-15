@@ -5,7 +5,8 @@ import { Partner } from '../../types';
 import Button from '../../components/ui/Button';
 import Pagination from '../../components/ui/Pagination';
 import { ConfirmModal } from '../../components/ui/Modal';
-import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon, XMarkIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { syncPartnersFromFolder } from '../../services/syncPartners';
 import { useLang } from '../../contexts/LanguageContext';
 import { uploadFile } from '../../services/storage.service';
 import { galleryApi } from '../../api/gallery';
@@ -27,6 +28,8 @@ export default function PartnersList() {
   const [nameAr, setNameAr] = useState('');
   const [img, setImg] = useState('');
   const [uploading, setUploading] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['partners', page, search],
@@ -83,6 +86,23 @@ export default function PartnersList() {
     }
   };
 
+  const handleSync = async () => {
+    setSyncing(true);
+    setSyncStatus(null);
+    try {
+      const result = await syncPartnersFromFolder((p) => {
+        setSyncStatus(`${p.current}/${p.total} — ${p.currentName}`);
+      });
+      toast.success(`Synced ${result.total - result.errors.length} partners (${result.errors.length} failed)`);
+      qc.invalidateQueries({ queryKey: ['partners'] });
+    } catch (err: any) {
+      toast.error(err.message || 'Sync failed');
+    } finally {
+      setSyncing(false);
+      setSyncStatus(null);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!nameEn.trim()) { toast.error('English name is required'); return; }
@@ -99,8 +119,17 @@ export default function PartnersList() {
             placeholder={T.partners.search}
             className="ps-9 pe-3 py-2 text-sm border border-gray-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-brand-500" />
         </div>
-        <Button onClick={() => { resetForm(); setShowForm(true); }}><PlusIcon className="w-4 h-4" /> {T.partners.new}</Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" onClick={handleSync} disabled>
+            <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> {syncing ? 'Syncing...' : 'Sync Partners'}
+          </Button>
+          <Button onClick={() => { resetForm(); setShowForm(true); }}><PlusIcon className="w-4 h-4" /> {T.partners.new}</Button>
+        </div>
       </div>
+
+      {syncStatus && (
+        <div className="text-sm text-brand-600 bg-brand-50 rounded-lg px-4 py-2">{syncStatus}</div>
+      )}
 
       {showForm && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">

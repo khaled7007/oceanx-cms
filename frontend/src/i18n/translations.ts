@@ -92,6 +92,8 @@ const t = {
       pdf_url: 'PDF URL',
       cover: 'Cover Image',
       cover_url: 'Cover Image URL',
+      desc_en: 'Description (English)',
+      desc_ar: 'Description (Arabic)',
       no_results: 'No reports found',
       no_results_sub: 'Create your first report to get started.',
       delete_title: 'Delete Report',
@@ -187,6 +189,10 @@ const t = {
       desc_ar: 'Description (Arabic)',
       image_url: 'Image URL',
       order_index: 'Order Index',
+      services_list: 'Services List',
+      add_item: 'Add Item',
+      item_en: 'Item (English)',
+      item_ar: 'Item (Arabic)',
     },
 
     // ── News ────────────────────────────────────────────────
@@ -363,6 +369,8 @@ const t = {
       pdf_url: 'رابط PDF',
       cover: 'صورة الغلاف',
       cover_url: 'رابط صورة الغلاف',
+      desc_en: 'الوصف (إنجليزي)',
+      desc_ar: 'الوصف (عربي)',
       no_results: 'لا توجد تقارير',
       no_results_sub: 'أنشئ أول تقرير للبدء.',
       delete_title: 'حذف التقرير',
@@ -454,6 +462,10 @@ const t = {
       desc_ar: 'الوصف (عربي)',
       image_url: 'رابط الصورة',
       order_index: 'رقم الترتيب',
+      services_list: 'قائمة الخدمات',
+      add_item: 'إضافة عنصر',
+      item_en: 'العنصر (إنجليزي)',
+      item_ar: 'العنصر (عربي)',
     },
 
     news: {

@@ -38,11 +38,18 @@ function toService(id: string, data: Record<string, unknown>): Service {
     return { en: (data[`${field}_en`] as string) ?? '', ar: (data[`${field}_ar`] as string) ?? undefined };
   };
 
+  const bilArr = (field: string): { en: string; ar?: string }[] => {
+    const arr = data[field];
+    if (Array.isArray(arr)) return arr.map((item: Record<string, unknown>) => ({ en: (item.en as string) ?? '', ar: (item.ar as string) ?? undefined }));
+    return [];
+  };
+
   return {
     id,
     title: bil('title'),
     overview: bil('overview'),
     description: bil('description'),
+    services_list: bilArr('services_list'),
     img: data.img as string | undefined,
     order_index: (data.order_index as number) ?? 0,
     active: (data.active as boolean) ?? true,

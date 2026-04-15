@@ -5,7 +5,7 @@ import { reportsApi } from '../../api/reports';
 import { categoriesApi } from '../../api/categories';
 import { CreateReportDto, ReportStatus } from '../../types';
 import Button from '../../components/ui/Button';
-import { Input, Select } from '../../components/ui/Input';
+import { Input, Select, Textarea } from '../../components/ui/Input';
 import FileUpload from '../../components/ui/FileUpload';
 import { useLang } from '../../contexts/LanguageContext';
 import { uploadFile, deleteFile } from '../../services/storage.service';
@@ -18,6 +18,7 @@ const STATUS_OPTIONS = Object.values(ReportStatus);
 
 const defaultForm: CreateReportDto = {
   title: { en: '' },
+  description: { en: '' },
   categories: [],
   date: '',
   status: ReportStatus.Draft,
@@ -53,6 +54,7 @@ export default function ReportForm() {
     if (existing) {
       setForm({
         title: existing.title,
+        description: existing.description ?? { en: '' },
         categories: existing.categories,
         date: existing.date ?? '',
         status: existing.status,
@@ -168,6 +170,20 @@ export default function ReportForm() {
             dir="rtl"
           />
         </div>
+
+        <Textarea
+          label={T.reports.desc_en}
+          value={form.description?.en || ''}
+          onChange={(e) => set('description', { ...form.description, en: e.target.value })}
+          rows={3}
+        />
+        <Textarea
+          label={T.reports.desc_ar}
+          value={form.description?.ar || ''}
+          onChange={(e) => set('description', { en: form.description?.en ?? '', ...form.description, ar: e.target.value })}
+          rows={3}
+          dir="rtl"
+        />
 
         <Input
           label={T.common.date}

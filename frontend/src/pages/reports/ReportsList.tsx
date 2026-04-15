@@ -8,11 +8,12 @@ import Button from '../../components/ui/Button';
 import { StatusBadge } from '../../components/ui/Badge';
 import Pagination from '../../components/ui/Pagination';
 import { ConfirmModal } from '../../components/ui/Modal';
-import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon, DocumentArrowDownIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon, DocumentArrowDownIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow, format } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
+import { syncReportsFromFolder } from '../../services/syncReports';
 
 export default function ReportsList() {
   const qc = useQueryClient();
@@ -23,6 +24,8 @@ export default function ReportsList() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<ReportStatus | ''>('');
   const [deleteTarget, setDeleteTarget] = useState<Report | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
 
   const queryParams: ReportQueryParams = { page, limit: 10, search, status };
 
@@ -45,6 +48,27 @@ export default function ReportsList() {
     mutationFn: (id: string) => reportsApi.toggleStatus(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['reports'] }),
   });
+
+  const handleSync = async () => {
+    setSyncing(true);
+    setSyncStatus('Starting…');
+    try {
+      const result = await syncReportsFromFolder((p) => {
+        setSyncStatus(`${p.current}/${p.total} — ${p.currentName}`);
+      });
+      toast.success(`Synced ${result.total - result.errors.length}/${result.total} reports`);
+      if (result.errors.length) {
+        console.warn('Sync errors:', result.errors);
+        toast.error(`${result.errors.length} errors — check console`);
+      }
+      qc.invalidateQueries({ queryKey: ['reports'] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Sync failed');
+    } finally {
+      setSyncing(false);
+      setSyncStatus(null);
+    }
+  };
 
   const statusOptions = [
     { value: '', label: T.common.all_statuses },
@@ -74,9 +98,15 @@ export default function ReportsList() {
             ))}
           </select>
         </div>
-        <Link to="/reports/new">
-          <Button><PlusIcon className="w-4 h-4" /> {T.reports.new}</Button>
-        </Link>
+        <div className="flex gap-2 items-center">
+          {syncStatus && <span className="text-xs text-gray-500 animate-pulse">{syncStatus}</span>}
+          <Button variant="secondary" onClick={handleSync} disabled>
+            <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> Sync Reports
+          </Button>
+          <Link to="/reports/new">
+            <Button><PlusIcon className="w-4 h-4" /> {T.reports.new}</Button>
+          </Link>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">

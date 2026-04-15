@@ -38,6 +38,7 @@ export interface BilingualArray {
 export interface Report {
   id: string;
   title: Bilingual;
+  description?: Bilingual;
   categories: string[];
   date?: string;
   status: ReportStatus;
@@ -49,6 +50,7 @@ export interface Report {
 
 export interface CreateReportDto {
   title: Bilingual;
+  description?: Bilingual;
   categories: string[];
   date?: string;
   status: ReportStatus;
@@ -108,6 +110,7 @@ export interface Service {
   title: Bilingual;
   overview?: Bilingual;
   description?: Bilingual;
+  services_list?: Bilingual[];
   img?: string;
   order_index: number;
   active: boolean;

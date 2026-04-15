@@ -50,6 +50,7 @@ function toReport(id: string, data: Record<string, unknown>): Report {
   return {
     id,
     title: bil('title'),
+    description: bil('description'),
     categories: (data.categories as string[]) ?? [],
     date: (data.date as string) ?? undefined,
     status: (data.status as ReportStatus) ?? ReportStatus.Draft,

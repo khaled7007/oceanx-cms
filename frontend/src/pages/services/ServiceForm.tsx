@@ -9,11 +9,11 @@ import { Input, Textarea, Select } from '../../components/ui/Input';
 import FileUpload from '../../components/ui/FileUpload';
 import { useLang } from '../../contexts/LanguageContext';
 import toast from 'react-hot-toast';
-import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { ArrowLeftIcon, ArrowRightIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 const emptyService: Partial<Service> = {
   title: { en: '' }, overview: { en: '' }, description: { en: '' },
-  img: '', order_index: 0, active: true,
+  services_list: [], img: '', order_index: 0, active: true,
 };
 
 export default function ServiceForm() {
@@ -34,6 +34,14 @@ export default function ServiceForm() {
 
   useEffect(() => { if (existing) setForm(existing); }, [existing]);
   const set = (field: keyof Service, value: unknown) => setForm((f) => ({ ...f, [field]: value }));
+
+  const servicesList = form.services_list ?? [];
+  const addServiceItem = () => set('services_list', [...servicesList, { en: '', ar: '' }]);
+  const updateServiceItem = (idx: number, lang: 'en' | 'ar', value: string) => {
+    const updated = servicesList.map((item, i) => i === idx ? { ...item, [lang]: value } : item);
+    set('services_list', updated);
+  };
+  const removeServiceItem = (idx: number) => set('services_list', servicesList.filter((_, i) => i !== idx));
 
   const saveMutation = useMutation({
     mutationFn: (data: Partial<Service>) => isEdit ? servicesApi.update(id!, data) : servicesApi.create(data),
@@ -72,6 +80,27 @@ export default function ServiceForm() {
             <Textarea label={T.services.overview_ar} value={form.overview?.ar || ''} onChange={(e) => set('overview', { ...form.overview, ar: e.target.value })} rows={3} dir="rtl" />
             <Textarea label={T.services.desc_en} value={form.description?.en || ''} onChange={(e) => set('description', { ...form.description, en: e.target.value })} rows={4} />
             <Textarea label={T.services.desc_ar} value={form.description?.ar || ''} onChange={(e) => set('description', { ...form.description, ar: e.target.value })} rows={4} dir="rtl" />
+          </div>
+
+          <div className="bg-white rounded-xl p-5 shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-gray-900">{T.services.services_list}</h3>
+              <button type="button" onClick={addServiceItem} className="inline-flex items-center gap-1 text-sm text-brand-600 hover:text-brand-700 font-medium">
+                <PlusIcon className="w-4 h-4" /> {T.services.add_item}
+              </button>
+            </div>
+            {servicesList.map((item, idx) => (
+              <div key={idx} className="flex gap-2 items-start">
+                <div className="flex-1 space-y-2">
+                  <Input label={`${T.services.item_en} #${idx + 1}`} value={item.en} onChange={(e) => updateServiceItem(idx, 'en', e.target.value)} />
+                  <Input label={`${T.services.item_ar} #${idx + 1}`} value={item.ar || ''} onChange={(e) => updateServiceItem(idx, 'ar', e.target.value)} dir="rtl" />
+                </div>
+                <button type="button" onClick={() => removeServiceItem(idx)} className="mt-7 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                  <TrashIcon className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            {servicesList.length === 0 && <p className="text-sm text-gray-400 text-center py-2">No items yet</p>}
           </div>
         </div>
 
