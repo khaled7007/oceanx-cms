@@ -105,7 +105,7 @@ export default function Dashboard() {
                     </td>
                   </tr>
                 ))}
-              </tbody>
+               </tbody>
             </table>
           )}
         </div>
