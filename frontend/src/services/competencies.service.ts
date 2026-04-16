@@ -61,6 +61,8 @@ function toCompetency(id: string, data: Record<string, unknown>): Competency {
     department: bil('department'),
     overview: bil('overview'),
     experience: bilArr('experience'),
+    years_of_experience: (data.years_of_experience as number) ?? undefined,
+    sort_order: (data.sort_order as number) ?? 0,
     linkedin_url: data.linkedin_url as string | undefined,
     created_at: toISO(data.created_at),
     updated_at: toISO(data.updated_at),
@@ -68,6 +70,19 @@ function toCompetency(id: string, data: Record<string, unknown>): Competency {
 }
 
 const col = () => collection(db, COLLECTION);
+
+function stripUndefined(obj: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (value === undefined) continue;
+    if (value && typeof value === 'object' && !Array.isArray(value) && !(value instanceof Timestamp)) {
+      result[key] = stripUndefined(value as Record<string, unknown>);
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
+}
 
 export const competenciesService = {
   async list(params: CompetencyQueryParams = {}): Promise<PaginatedResponse<Competency>> {
@@ -127,13 +142,13 @@ export const competenciesService = {
   async create(dto: Partial<Competency>): Promise<Competency> {
     const now = serverTimestamp();
     const { id: _, created_at: _c, updated_at: _u, ...fields } = dto as Record<string, unknown>;
-    const ref = await addDoc(col(), { ...fields, created_at: now, updated_at: now });
+    const ref = await addDoc(col(), { ...stripUndefined(fields), created_at: now, updated_at: now });
     return this.getById(ref.id);
   },
 
   async update(id: string, dto: Partial<Competency>): Promise<Competency> {
     const { id: _, created_at: _c, updated_at: _u, ...fields } = dto as Record<string, unknown>;
-    await updateDoc(doc(db, COLLECTION, id), { ...fields, updated_at: serverTimestamp() });
+    await updateDoc(doc(db, COLLECTION, id), { ...stripUndefined(fields), updated_at: serverTimestamp() });
     return this.getById(id);
   },
 

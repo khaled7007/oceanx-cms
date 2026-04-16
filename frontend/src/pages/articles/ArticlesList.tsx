@@ -114,8 +114,8 @@ export default function ArticlesList() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">
-                          {article.categories.slice(0, 3).map((cat) => (
-                            <span key={cat} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">{cat}</span>
+                          {article.categories.slice(0, 3).map((cat, i) => (
+                            <span key={i} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">{isAr ? (cat.ar || cat.en) : cat.en}</span>
                           ))}
                           {article.categories.length > 3 && (
                             <span className="px-1.5 py-0.5 text-gray-400 text-xs">+{article.categories.length - 3}</span>

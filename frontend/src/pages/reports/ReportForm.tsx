@@ -120,11 +120,11 @@ export default function ReportForm() {
     },
   });
 
-  const toggleCategory = (catName: string) => {
-    if (form.categories.includes(catName)) {
-      set('categories', form.categories.filter((c) => c !== catName));
+  const toggleCategory = (cat: { en: string; ar?: string }) => {
+    if (form.categories.some((c) => c.en === cat.en)) {
+      set('categories', form.categories.filter((c) => c.en !== cat.en));
     } else {
-      set('categories', [...form.categories, catName]);
+      set('categories', [...form.categories, cat]);
     }
   };
 
@@ -196,9 +196,9 @@ export default function ReportForm() {
           <label className="block text-sm font-medium text-gray-700">{T.reports.categories}</label>
           <div className="flex flex-wrap gap-2">
             {(allCategories ?? []).map((cat) => {
-              const selected = form.categories.includes(cat.name.en);
+              const selected = form.categories.some((c) => c.en === cat.name.en);
               return (
-                <button key={cat.id} type="button" onClick={() => toggleCategory(cat.name.en)}
+                <button key={cat.id} type="button" onClick={() => toggleCategory({ en: cat.name.en, ar: cat.name.ar })}
                   className={`px-2.5 py-1 rounded-lg text-sm border transition-colors ${
                     selected
                       ? 'bg-brand-50 border-brand-300 text-brand-700'

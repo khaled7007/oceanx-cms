@@ -10,6 +10,7 @@ import {
   UserGroupIcon,
   BuildingOffice2Icon,
   TagIcon,
+  ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
 
@@ -27,6 +28,7 @@ export default function Sidebar() {
     { to: '/competencies', label: T.nav.competencies, icon: UserGroupIcon },
     { to: '/partners',  label: T.nav.partners,   icon: BuildingOffice2Icon },
     { to: '/categories', label: T.nav.categories, icon: TagIcon },
+    { to: '/analytics', label: T.nav.analytics, icon: ChartBarIcon },
   ];
 
   return (

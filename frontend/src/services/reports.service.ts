@@ -51,7 +51,11 @@ function toReport(id: string, data: Record<string, unknown>): Report {
     id,
     title: bil('title'),
     description: bil('description'),
-    categories: (data.categories as string[]) ?? [],
+    categories: Array.isArray(data.categories)
+      ? (data.categories as Record<string, unknown>[]).map((c) =>
+          typeof c === 'string' ? { en: c as string } : { en: (c.en as string) ?? '', ar: (c.ar as string) ?? '' },
+        )
+      : [],
     date: (data.date as string) ?? undefined,
     status: (data.status as ReportStatus) ?? ReportStatus.Draft,
     cover_image: (data.cover_image as string) ?? undefined,
@@ -86,7 +90,7 @@ export const reportsService = {
           (r) =>
             r.title.en.toLowerCase().includes(search) ||
             (r.title.ar ?? '').toLowerCase().includes(search) ||
-            r.categories.some((c) => c.toLowerCase().includes(search)),
+            r.categories.some((c) => c.en.toLowerCase().includes(search) || (c.ar ?? '').toLowerCase().includes(search)),
         );
       const start = (pageNum - 1) * pageSize;
       return {

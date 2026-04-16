@@ -39,7 +39,7 @@ export interface Report {
   id: string;
   title: Bilingual;
   description?: Bilingual;
-  categories: string[];
+  categories: Bilingual[];
   date?: string;
   status: ReportStatus;
   cover_image?: string;
@@ -51,7 +51,7 @@ export interface Report {
 export interface CreateReportDto {
   title: Bilingual;
   description?: Bilingual;
-  categories: string[];
+  categories: Bilingual[];
   date?: string;
   status: ReportStatus;
   cover_image?: string;
@@ -64,7 +64,7 @@ export interface Article {
   id: string;
   title: Bilingual;
   body?: Bilingual;
-  categories: string[];
+  categories: Bilingual[];
   date?: string;
   cover_image?: string;
   status: ContentStatus;
@@ -125,7 +125,7 @@ export interface NewsItem {
   source?: string;
   date?: string;
   publish_date?: string;
-  cover_image?: string;
+  images?: string[];
   status: ContentStatus;
   created_at: string;
   updated_at: string;
@@ -145,6 +145,8 @@ export interface Competency {
   department?: Bilingual;
   overview?: Bilingual;
   experience: BilingualArray;
+  years_of_experience?: number;
+  sort_order?: number;
   linkedin_url?: string;
   created_at: string;
   updated_at: string;
@@ -188,4 +190,12 @@ export interface GalleryItem {
   uploaded_from: string;
   visible: boolean;
   created_at: string;
+}
+
+export interface Analytics {
+  projects_delivered: number;
+  clients: number;
+  partners: number;
+  sectors_served: number;
+  years_of_experience: number;
 }

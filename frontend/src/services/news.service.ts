@@ -47,7 +47,7 @@ function toNewsItem(id: string, data: Record<string, unknown>): NewsItem {
     source: data.source as string | undefined,
     date: (data.date as string) ?? undefined,
     publish_date: data.publish_date as string | undefined,
-    cover_image: data.cover_image as string | undefined,
+    images: Array.isArray(data.images) ? (data.images as string[]) : [],
     status: (data.status as ContentStatus) ?? 'draft',
     created_at: toISO(data.created_at),
     updated_at: toISO(data.updated_at),

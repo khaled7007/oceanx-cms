@@ -56,12 +56,12 @@ export default function ArticleForm() {
     finally { setUploading(false); }
   };
 
-  const toggleCategory = (catName: string) => {
+  const toggleCategory = (cat: { en: string; ar?: string }) => {
     const cats = form.categories ?? [];
-    if (cats.includes(catName)) {
-      set('categories', cats.filter((c) => c !== catName));
+    if (cats.some((c) => c.en === cat.en)) {
+      set('categories', cats.filter((c) => c.en !== cat.en));
     } else {
-      set('categories', [...cats, catName]);
+      set('categories', [...cats, cat]);
     }
   };
 
@@ -99,9 +99,9 @@ export default function ArticleForm() {
               <label className="block text-sm font-medium text-gray-700">{T.articles.categories}</label>
               <div className="flex flex-wrap gap-2">
                 {(allCategories ?? []).map((cat) => {
-                  const selected = (form.categories ?? []).includes(cat.name.en);
+                  const selected = (form.categories ?? []).some((c) => c.en === cat.name.en);
                   return (
-                    <button key={cat.id} type="button" onClick={() => toggleCategory(cat.name.en)}
+                    <button key={cat.id} type="button" onClick={() => toggleCategory({ en: cat.name.en, ar: cat.name.ar })}
                       className={`px-2.5 py-1 rounded-lg text-sm border transition-colors ${
                         selected
                           ? 'bg-brand-50 border-brand-300 text-brand-700'

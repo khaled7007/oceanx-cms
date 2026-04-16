@@ -14,6 +14,7 @@ const t = {
       competencies: 'Competencies',
       partners: 'Partners',
       categories: 'Categories',
+      analytics: 'Analytics',
       portal: 'CMS Portal',
     },
 
@@ -243,6 +244,8 @@ const t = {
       add_experience_en: 'Add experience…',
       add_experience_ar: 'أضف خبرة…',
       linkedin: 'LinkedIn URL',
+      years_exp: 'Years of Experience',
+      sort_order: 'Sort Order',
       no_results: 'No competencies found',
       delete_title: 'Delete Competency',
       delete_msg: (name: string) => `Delete "${name}"? This cannot be undone.`,
@@ -278,6 +281,18 @@ const t = {
       create: 'Create Category',
       update: 'Update Category',
     },
+
+    analytics: {
+      title: 'Analytics',
+      subtitle: 'Manage the key metrics displayed on the website',
+      projects_delivered: 'Projects Delivered',
+      clients: 'Clients',
+      partners: 'Partners',
+      sectors_served: 'Sectors Served',
+      years_of_experience: 'Years of Experience',
+      save: 'Save Changes',
+      saved: 'Analytics saved successfully',
+    },
   },
 
   // ════════════════════════════════════════════════════════
@@ -295,6 +310,7 @@ const t = {
       competencies: 'الكفاءات',
       partners: 'الشركاء',
       categories: 'التصنيفات',
+      analytics: 'الإحصائيات',
       portal: 'بوابة الإدارة',
     },
 
@@ -476,8 +492,8 @@ const t = {
       headline_ar: 'العنوان الرئيسي (عربي)',
       source: 'المصدر',
       publish_date: 'تاريخ النشر',
-      cover: 'صورة الغلاف',
-      cover_url: 'رابط صورة الغلاف',
+      cover: 'الصور',
+      cover_url: 'رابط الصورة',
       no_results: 'لا توجد أخبار',
       delete_title: 'حذف الخبر',
       delete_msg: (title: string) => `حذف "${title}"؟ لا يمكن التراجع.`,
@@ -515,6 +531,8 @@ const t = {
       add_experience_en: 'Add experience…',
       add_experience_ar: 'أضف خبرة…',
       linkedin: 'رابط LinkedIn',
+      years_exp: 'سنوات الخبرة',
+      sort_order: 'ترتيب العرض',
       no_results: 'لا توجد كفاءات',
       delete_title: 'حذف الكفاءة',
       delete_msg: (name: string) => `حذف "${name}"؟ لا يمكن التراجع.`,
@@ -549,6 +567,18 @@ const t = {
       delete_msg: (name: string) => `حذف "${name}"؟ لا يمكن التراجع.`,
       create: 'إنشاء تصنيف',
       update: 'تحديث التصنيف',
+    },
+
+    analytics: {
+      title: 'الإحصائيات',
+      subtitle: 'إدارة المؤشرات الرئيسية المعروضة على الموقع',
+      projects_delivered: 'المشاريع المنجزة',
+      clients: 'العملاء',
+      partners: 'الشركاء',
+      sectors_served: 'القطاعات المخدومة',
+      years_of_experience: 'سنوات الخبرة',
+      save: 'حفظ التغييرات',
+      saved: 'تم حفظ الإحصائيات بنجاح',
     },
   },
 } as const;

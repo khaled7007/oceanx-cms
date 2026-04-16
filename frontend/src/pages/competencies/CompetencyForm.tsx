@@ -15,7 +15,7 @@ const emptyCompetency: Partial<Competency> = {
   name: { en: '' }, position: { en: '' }, photo: '',
   category: CompetencyCategory.BoardOfDirectors,
   department: { en: '' }, overview: { en: '' },
-  experience: { en: [], ar: [] }, linkedin_url: '',
+  experience: { en: [], ar: [] }, years_of_experience: 0, sort_order: 0, linkedin_url: '',
 };
 
 export default function CompetencyForm() {
@@ -106,6 +106,8 @@ export default function CompetencyForm() {
               <Input label={T.competencies.department_ar} value={form.department?.ar || ''} onChange={(e) => set('department', { ...form.department, ar: e.target.value })} dir="rtl" />
             </div>
             <Input label={T.competencies.linkedin} value={form.linkedin_url || ''} onChange={(e) => set('linkedin_url', e.target.value)} placeholder="https://linkedin.com/in/..." />
+            <Input label={T.competencies.years_exp} type="number" value={String(form.years_of_experience ?? 0)} onChange={(e) => set('years_of_experience', parseInt(e.target.value) || 0)} />
+            <Input label={T.competencies.sort_order} type="number" value={String(form.sort_order ?? 0)} onChange={(e) => set('sort_order', parseInt(e.target.value) || 0)} />
           </div>
 
           {/* Overview */}

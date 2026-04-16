@@ -7,7 +7,8 @@ import Button from '../../components/ui/Button';
 import { StatusBadge } from '../../components/ui/Badge';
 import Pagination from '../../components/ui/Pagination';
 import { ConfirmModal } from '../../components/ui/Modal';
-import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { syncNewsFromFolder } from '../../services/syncNews';
 import { useLang } from '../../contexts/LanguageContext';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -22,6 +23,8 @@ export default function NewsList() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<'' | ContentStatus>('');
   const [deleteTarget, setDeleteTarget] = useState<NewsItem | null>(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['news', page, search, status],
@@ -38,6 +41,23 @@ export default function NewsList() {
     mutationFn: (id: string) => newsApi.toggleStatus(id),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['news'] }); },
   });
+
+  const handleSync = async () => {
+    setSyncing(true);
+    setSyncStatus(null);
+    try {
+      const result = await syncNewsFromFolder((p) => {
+        setSyncStatus(`${p.current}/${p.total} — ${p.currentName}`);
+      });
+      toast.success(`Synced ${result.total - result.errors.length} news (${result.errors.length} failed)`);
+      qc.invalidateQueries({ queryKey: ['news'] });
+    } catch (err: any) {
+      toast.error(err.message || 'Sync failed');
+    } finally {
+      setSyncing(false);
+      setSyncStatus(null);
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -56,8 +76,17 @@ export default function NewsList() {
             <option value="draft">{T.common.draft}</option>
           </select>
         </div>
-        <Link to="/news/new"><Button><PlusIcon className="w-4 h-4" /> {T.news.new}</Button></Link>
+        <div className="flex gap-2">
+          <Button variant="secondary" onClick={handleSync} disabled={syncing}>
+            <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> {syncing ? 'Syncing...' : 'Sync News'}
+          </Button>
+          <Link to="/news/new"><Button><PlusIcon className="w-4 h-4" /> {T.news.new}</Button></Link>
+        </div>
       </div>
+
+      {syncStatus && (
+        <div className="text-sm text-brand-600 bg-brand-50 rounded-lg px-4 py-2">{syncStatus}</div>
+      )}
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         {isLoading ? <div className="p-8 text-center"><div className="animate-spin w-6 h-6 border-2 border-brand-500 border-t-transparent rounded-full mx-auto" /></div>

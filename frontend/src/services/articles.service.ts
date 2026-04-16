@@ -44,7 +44,11 @@ function toArticle(id: string, data: Record<string, unknown>): Article {
     id,
     title: bil('title'),
     body: bil('body'),
-    categories: Array.isArray(data.categories) ? (data.categories as string[]) : [],
+    categories: Array.isArray(data.categories)
+      ? (data.categories as Record<string, unknown>[]).map((c) =>
+          typeof c === 'string' ? { en: c } : { en: (c.en as string) ?? '', ar: (c.ar as string) ?? '' },
+        )
+      : [],
     date: (data.date as string) ?? undefined,
     cover_image: data.cover_image as string | undefined,
     status: (data.status as ContentStatus) ?? 'draft',
@@ -77,7 +81,7 @@ export const articlesService = {
           (a) =>
             a.title.en.toLowerCase().includes(search) ||
             (a.title.ar ?? '').toLowerCase().includes(search) ||
-            a.categories.some((c) => c.toLowerCase().includes(search)),
+            a.categories.some((c) => c.en.toLowerCase().includes(search) || (c.ar ?? '').toLowerCase().includes(search)),
         );
       const start = (pageNum - 1) * pageSize;
       return {
