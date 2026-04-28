@@ -107,7 +107,16 @@ export default function App() {
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
-  if (isLoading) return null;
+  if (isLoading) return (
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-14 h-14 bg-brand-500 rounded-2xl flex items-center justify-center">
+          <span className="text-white font-bold text-xl">OX</span>
+        </div>
+        <div className="animate-spin w-6 h-6 border-2 border-brand-400 border-t-transparent rounded-full" />
+      </div>
+    </div>
+  );
   if (user) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }
