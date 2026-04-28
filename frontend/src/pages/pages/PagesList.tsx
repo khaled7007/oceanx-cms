@@ -9,6 +9,7 @@ import Pagination from '../../components/ui/Pagination';
 import { ConfirmModal } from '../../components/ui/Modal';
 import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
+import { usePermissions } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
@@ -16,6 +17,7 @@ import { ar, enUS } from 'date-fns/locale';
 export default function PagesList() {
   const qc = useQueryClient();
   const { T, lang } = useLang();
+  const { canWrite } = usePermissions();
   const isAr = lang === 'ar';
   const locale = isAr ? ar : enUS;
   const [page, setPage] = useState(1);
@@ -47,7 +49,7 @@ export default function PagesList() {
             placeholder={T.pages.search}
             className="ps-9 pe-3 py-2 text-sm border border-gray-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-brand-500" />
         </div>
-        <Link to="/pages/new"><Button><PlusIcon className="w-4 h-4" /> {T.pages.new}</Button></Link>
+        {canWrite && <Link to="/pages/new"><Button><PlusIcon className="w-4 h-4" /> {T.pages.new}</Button></Link>}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -72,14 +74,14 @@ export default function PagesList() {
                         <p className="font-medium text-gray-900" dir={isAr ? 'rtl' : undefined}>{isAr ? (p.title.ar || p.title.en) : p.title.en}</p>
                       </td>
                       <td className="px-4 py-3 font-mono text-xs text-gray-500">/{p.slug}</td>
-                      <td className="px-4 py-3"><button onClick={() => toggleMutation.mutate(p.id)}><StatusBadge status={p.status} /></button></td>
+                      <td className="px-4 py-3">{canWrite ? <button onClick={() => toggleMutation.mutate(p.id)}><StatusBadge status={p.status} /></button> : <StatusBadge status={p.status} />}</td>
                       <td className="px-4 py-3 text-gray-400 text-xs">
                         {formatDistanceToNow(new Date(p.updated_at), { addSuffix: true, locale })}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
-                          <Link to={`/pages/${p.id}/edit`}><Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button></Link>
-                          <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(p)}><TrashIcon className="w-4 h-4 text-red-400" /></Button>
+                          {canWrite && <Link to={`/pages/${p.id}/edit`}><Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button></Link>}
+                          {canWrite && <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(p)}><TrashIcon className="w-4 h-4 text-red-400" /></Button>}
                         </div>
                       </td>
                     </tr>

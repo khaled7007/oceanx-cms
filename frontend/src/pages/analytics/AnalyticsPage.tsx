@@ -4,6 +4,7 @@ import { analyticsApi } from '../../api/analytics';
 import { Analytics } from '../../types';
 import Button from '../../components/ui/Button';
 import { useLang } from '../../contexts/LanguageContext';
+import { usePermissions } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import {
   BriefcaseIcon,
@@ -24,6 +25,7 @@ const defaults: Analytics = {
 export default function AnalyticsPage() {
   const qc = useQueryClient();
   const { T } = useLang();
+  const { canWrite } = usePermissions();
   const [form, setForm] = useState<Analytics>(defaults);
 
   const { data, isLoading } = useQuery({
@@ -89,16 +91,19 @@ export default function AnalyticsPage() {
                 min={0}
                 value={form[key]}
                 onChange={(e) => set(key, e.target.value)}
-                className="w-full text-2xl font-bold text-gray-900 border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500 text-center"
+                disabled={!canWrite}
+                className="w-full text-2xl font-bold text-gray-900 border border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500 text-center disabled:bg-gray-50 disabled:text-gray-400"
               />
             </div>
           ))}
         </div>
 
         <div className="flex justify-end">
-          <Button type="submit" loading={saveMutation.isPending}>
-            {T.analytics.save}
-          </Button>
+          {canWrite && (
+            <Button type="submit" loading={saveMutation.isPending}>
+              {T.analytics.save}
+            </Button>
+          )}
         </div>
       </form>
     </div>

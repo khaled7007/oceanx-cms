@@ -20,38 +20,71 @@ import CompetencyForm from './pages/competencies/CompetencyForm';
 import PartnersList from './pages/partners/PartnersList';
 import CategoriesList from './pages/categories/CategoriesList';
 import AnalyticsPage from './pages/analytics/AnalyticsPage';
+import UsersPage from './pages/users/UsersPage';
+import AppliesPage from './pages/applies/AppliesPage';
+
+/** Redirect to /applies if user is hr (hr can only access /applies) */
+function HrBlockedRoute({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  if (user?.role === 'hr') return <Navigate to="/applies" replace />;
+  return <>{children}</>;
+}
+
+/** Redirect to /dashboard if user does not have write access */
+function WriteRoute({ children }: { children: React.ReactNode }) {
+  const { permissions } = useAuth();
+  if (!permissions.canWrite) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+}
+
+/** Redirect to /dashboard if user is not admin */
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { permissions } = useAuth();
+  if (!permissions.isAdmin) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+}
+
+/** Redirect to /dashboard if user cannot manage applies (admin or hr only) */
+function AppliesRoute({ children }: { children: React.ReactNode }) {
+  const { permissions } = useAuth();
+  if (!permissions.canManageApplies) return <Navigate to="/dashboard" replace />;
+  return <>{children}</>;
+}
 
 function ProtectedRoutes() {
   const { user, isLoading } = useAuth();
   if (isLoading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full"/></div>;
   if (!user) return <Navigate to="/login" replace />;
+  const defaultPath = user.role === 'hr' ? '/applies' : '/dashboard';
   return (
     <Layout>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/reports" element={<ReportsList />} />
-        <Route path="/reports/new" element={<ReportForm />} />
-        <Route path="/reports/:id/edit" element={<ReportForm />} />
-        <Route path="/articles" element={<ArticlesList />} />
-        <Route path="/articles/new" element={<ArticleForm />} />
-        <Route path="/articles/:id/edit" element={<ArticleForm />} />
-        <Route path="/pages" element={<PagesList />} />
-        <Route path="/pages/new" element={<PageForm />} />
-        <Route path="/pages/:id/edit" element={<PageForm />} />
-        <Route path="/media" element={<MediaLibrary />} />
-        <Route path="/services" element={<ServicesList />} />
-        <Route path="/services/new" element={<ServiceForm />} />
-        <Route path="/services/:id/edit" element={<ServiceForm />} />
-        <Route path="/news" element={<NewsList />} />
-        <Route path="/news/new" element={<NewsForm />} />
-        <Route path="/news/:id/edit" element={<NewsForm />} />
-        <Route path="/competencies" element={<CompetenciesList />} />
-        <Route path="/competencies/new" element={<CompetencyForm />} />
-        <Route path="/competencies/:id/edit" element={<CompetencyForm />} />
-        <Route path="/partners" element={<PartnersList />} />
-        <Route path="/categories" element={<CategoriesList />} />
-        <Route path="/analytics" element={<AnalyticsPage />} />
+        <Route path="/" element={<Navigate to={defaultPath} replace />} />
+        <Route path="/dashboard" element={<HrBlockedRoute><Dashboard /></HrBlockedRoute>} />
+        <Route path="/reports" element={<HrBlockedRoute><ReportsList /></HrBlockedRoute>} />
+        <Route path="/reports/new" element={<HrBlockedRoute><WriteRoute><ReportForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/reports/:id/edit" element={<HrBlockedRoute><WriteRoute><ReportForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/articles" element={<HrBlockedRoute><ArticlesList /></HrBlockedRoute>} />
+        <Route path="/articles/new" element={<HrBlockedRoute><WriteRoute><ArticleForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/articles/:id/edit" element={<HrBlockedRoute><WriteRoute><ArticleForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/pages" element={<HrBlockedRoute><PagesList /></HrBlockedRoute>} />
+        <Route path="/pages/new" element={<HrBlockedRoute><WriteRoute><PageForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/pages/:id/edit" element={<HrBlockedRoute><WriteRoute><PageForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/media" element={<HrBlockedRoute><MediaLibrary /></HrBlockedRoute>} />
+        <Route path="/services" element={<HrBlockedRoute><ServicesList /></HrBlockedRoute>} />
+        <Route path="/services/new" element={<HrBlockedRoute><WriteRoute><ServiceForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/services/:id/edit" element={<HrBlockedRoute><WriteRoute><ServiceForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/news" element={<HrBlockedRoute><NewsList /></HrBlockedRoute>} />
+        <Route path="/news/new" element={<HrBlockedRoute><WriteRoute><NewsForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/news/:id/edit" element={<HrBlockedRoute><WriteRoute><NewsForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/competencies" element={<HrBlockedRoute><CompetenciesList /></HrBlockedRoute>} />
+        <Route path="/competencies/new" element={<HrBlockedRoute><WriteRoute><CompetencyForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/competencies/:id/edit" element={<HrBlockedRoute><WriteRoute><CompetencyForm /></WriteRoute></HrBlockedRoute>} />
+        <Route path="/partners" element={<HrBlockedRoute><PartnersList /></HrBlockedRoute>} />
+        <Route path="/categories" element={<HrBlockedRoute><CategoriesList /></HrBlockedRoute>} />
+        <Route path="/analytics" element={<HrBlockedRoute><AnalyticsPage /></HrBlockedRoute>} />
+        <Route path="/users" element={<AdminRoute><UsersPage /></AdminRoute>} />
+        <Route path="/applies" element={<AppliesRoute><AppliesPage /></AppliesRoute>} />
       </Routes>
     </Layout>
   );

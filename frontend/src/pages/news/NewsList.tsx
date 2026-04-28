@@ -10,6 +10,7 @@ import { ConfirmModal } from '../../components/ui/Modal';
 import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { syncNewsFromFolder } from '../../services/syncNews';
 import { useLang } from '../../contexts/LanguageContext';
+import { usePermissions } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow, format } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
@@ -17,6 +18,7 @@ import { ar, enUS } from 'date-fns/locale';
 export default function NewsList() {
   const qc = useQueryClient();
   const { T, lang } = useLang();
+  const { canWrite, canSync } = usePermissions();
   const isAr = lang === 'ar';
   const locale = isAr ? ar : enUS;
   const [page, setPage] = useState(1);
@@ -77,10 +79,12 @@ export default function NewsList() {
           </select>
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary" onClick={handleSync} disabled={syncing}>
-            <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> {syncing ? 'Syncing...' : 'Sync News'}
-          </Button>
-          <Link to="/news/new"><Button><PlusIcon className="w-4 h-4" /> {T.news.new}</Button></Link>
+          {canSync && (
+            <Button variant="secondary" onClick={handleSync} disabled={syncing}>
+              <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> {syncing ? 'Syncing...' : 'Sync News'}
+            </Button>
+          )}
+          {canWrite && <Link to="/news/new"><Button><PlusIcon className="w-4 h-4" /> {T.news.new}</Button></Link>}
         </div>
       </div>
 
@@ -118,14 +122,14 @@ export default function NewsList() {
                       <td className="px-4 py-3 text-gray-600 text-xs">
                         {item.publish_date ? format(new Date(item.publish_date), 'MMM d, yyyy') : '—'}
                       </td>
-                      <td className="px-4 py-3"><button onClick={() => toggleMutation.mutate(item.id)}><StatusBadge status={item.status} /></button></td>
+                      <td className="px-4 py-3">{canWrite ? <button onClick={() => toggleMutation.mutate(item.id)}><StatusBadge status={item.status} /></button> : <StatusBadge status={item.status} />}</td>
                       <td className="px-4 py-3 text-gray-400 text-xs">
                         {formatDistanceToNow(new Date(item.updated_at), { addSuffix: true, locale })}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
-                          <Link to={`/news/${item.id}/edit`}><Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button></Link>
-                          <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(item)}><TrashIcon className="w-4 h-4 text-red-400" /></Button>
+                          {canWrite && <Link to={`/news/${item.id}/edit`}><Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button></Link>}
+                          {canWrite && <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(item)}><TrashIcon className="w-4 h-4 text-red-400" /></Button>}
                         </div>
                       </td>
                     </tr>

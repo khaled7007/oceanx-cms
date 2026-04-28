@@ -16,6 +16,8 @@ const t = {
       categories: 'Categories',
       analytics: 'Analytics',
       portal: 'CMS Portal',
+      users: 'Users',
+      applies: 'Careers',
     },
 
     // ── Auth ────────────────────────────────────────────────
@@ -282,6 +284,37 @@ const t = {
       update: 'Update Category',
     },
 
+    applies: {
+      title: 'Applications',
+      subtitle: 'Browse and manage submitted applications',
+      delete_title: 'Delete Application',
+      delete_msg: (name: string) => `Delete application from "${name}"? This cannot be undone.`,
+      no_results: 'No applications found',
+      no_results_sub: 'Try adjusting your filters.',
+      search_placeholder: 'Search by name, email, or specialization…',
+      all_types: 'All Types',
+      all_genders: 'All Genders',
+      contact: 'Contact',
+      personal_info: 'Personal Info',
+      experience: 'Experience',
+      applied: 'Applied',
+      attachments: 'Attachments',
+      view_cv: 'View CV / Resume',
+      portfolio: 'Portfolio / Links',
+      delete_btn: 'Delete Application',
+      age: (n: number) => `${n} years old`,
+      types: {
+        cooperative_training: 'Cooperative Training',
+        open_application: 'Open Application',
+        cv_submission: 'CV Submission',
+        leadership_program: 'Leadership Program',
+      },
+      genders: {
+        M: 'Male',
+        F: 'Female',
+      },
+    },
+
     analytics: {
       title: 'Analytics',
       subtitle: 'Manage the key metrics displayed on the website',
@@ -312,6 +345,8 @@ const t = {
       categories: 'التصنيفات',
       analytics: 'الإحصائيات',
       portal: 'بوابة الإدارة',
+      users: 'المستخدمون',
+      applies: 'التوظيف',
     },
 
     auth: {
@@ -567,6 +602,37 @@ const t = {
       delete_msg: (name: string) => `حذف "${name}"؟ لا يمكن التراجع.`,
       create: 'إنشاء تصنيف',
       update: 'تحديث التصنيف',
+    },
+
+    applies: {
+      title: 'التوظيف',
+      subtitle: 'استعراض وإدارة الطلبات المقدَّمة',
+      delete_title: 'حذف الطلب',
+      delete_msg: (name: string) => `حذف طلب "${name}"؟ لا يمكن التراجع عن هذا الإجراء.`,
+      no_results: 'لا توجد طلبات',
+      no_results_sub: 'حاول تعديل معايير البحث.',
+      search_placeholder: 'البحث بالاسم أو البريد أو التخصص…',
+      all_types: 'جميع الأنواع',
+      all_genders: 'جميع الجنسين',
+      contact: 'التواصل',
+      personal_info: 'المعلومات الشخصية',
+      experience: 'الخبرة',
+      applied: 'تاريخ التقديم',
+      attachments: 'المرفقات',
+      view_cv: 'عرض السيرة الذاتية',
+      portfolio: 'الأعمال / الروابط',
+      delete_btn: 'حذف الطلب',
+      age: (n: number) => `عمره ${n} سنة`,
+      types: {
+        cooperative_training: 'التدريب التعاوني',
+        open_application: 'طلب مفتوح',
+        cv_submission: 'تقديم سيرة ذاتية',
+        leadership_program: 'برنامج القيادة',
+      },
+      genders: {
+        M: 'ذكر',
+        F: 'أنثى',
+      },
     },
 
     analytics: {

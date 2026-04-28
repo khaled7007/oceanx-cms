@@ -10,6 +10,7 @@ import Pagination from '../../components/ui/Pagination';
 import { ConfirmModal } from '../../components/ui/Modal';
 import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon, DocumentArrowDownIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
+import { usePermissions } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow, format } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
@@ -18,6 +19,7 @@ import { syncReportsFromFolder } from '../../services/syncReports';
 export default function ReportsList() {
   const qc = useQueryClient();
   const { T, lang } = useLang();
+  const { canWrite, canSync } = usePermissions();
   const isAr = lang === 'ar';
   const locale = isAr ? ar : enUS;
   const [page, setPage] = useState(1);
@@ -99,13 +101,17 @@ export default function ReportsList() {
           </select>
         </div>
         <div className="flex gap-2 items-center">
-          {syncStatus && <span className="text-xs text-gray-500 animate-pulse">{syncStatus}</span>}
-          <Button variant="secondary" onClick={handleSync} disabled>
-            <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> Sync Reports
-          </Button>
-          <Link to="/reports/new">
-            <Button><PlusIcon className="w-4 h-4" /> {T.reports.new}</Button>
-          </Link>
+          {canSync && syncStatus && <span className="text-xs text-gray-500 animate-pulse">{syncStatus}</span>}
+          {canSync && (
+            <Button variant="secondary" onClick={handleSync} disabled>
+              <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> Sync Reports
+            </Button>
+          )}
+          {canWrite && (
+            <Link to="/reports/new">
+              <Button><PlusIcon className="w-4 h-4" /> {T.reports.new}</Button>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -153,9 +159,13 @@ export default function ReportsList() {
                       {report.date ? format(new Date(report.date), 'MMM d, yyyy') : '—'}
                     </td>
                     <td className="px-4 py-3">
-                      <button onClick={() => toggleMutation.mutate(report.id)} title={T.common.status}>
+                      {canWrite ? (
+                        <button onClick={() => toggleMutation.mutate(report.id)} title={T.common.status}>
+                          <StatusBadge status={report.status} />
+                        </button>
+                      ) : (
                         <StatusBadge status={report.status} />
-                      </button>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-gray-400 text-xs">
                       {formatDistanceToNow(new Date(report.updated_at), { addSuffix: true, locale })}
@@ -177,12 +187,16 @@ export default function ReportsList() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
-                        <Link to={`/reports/${report.id}/edit`}>
-                          <Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button>
-                        </Link>
-                        <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(report)}>
-                          <TrashIcon className="w-4 h-4 text-red-400" />
-                        </Button>
+                        {canWrite && (
+                          <Link to={`/reports/${report.id}/edit`}>
+                            <Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button>
+                          </Link>
+                        )}
+                        {canWrite && (
+                          <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(report)}>
+                            <TrashIcon className="w-4 h-4 text-red-400" />
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>

@@ -8,6 +8,7 @@ import { ConfirmModal } from '../../components/ui/Modal';
 import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon, XMarkIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { syncPartnersFromFolder } from '../../services/syncPartners';
 import { useLang } from '../../contexts/LanguageContext';
+import { usePermissions } from '../../contexts/AuthContext';
 import { uploadFile } from '../../services/storage.service';
 import { galleryApi } from '../../api/gallery';
 import toast from 'react-hot-toast';
@@ -17,6 +18,7 @@ import { ar, enUS } from 'date-fns/locale';
 export default function PartnersList() {
   const qc = useQueryClient();
   const { T, lang } = useLang();
+  const { canWrite, canSync } = usePermissions();
   const isAr = lang === 'ar';
   const locale = isAr ? ar : enUS;
   const [page, setPage] = useState(1);
@@ -120,10 +122,12 @@ export default function PartnersList() {
             className="ps-9 pe-3 py-2 text-sm border border-gray-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-brand-500" />
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary" onClick={handleSync} disabled>
-            <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> {syncing ? 'Syncing...' : 'Sync Partners'}
-          </Button>
-          <Button onClick={() => { resetForm(); setShowForm(true); }}><PlusIcon className="w-4 h-4" /> {T.partners.new}</Button>
+          {canSync && (
+            <Button variant="secondary" onClick={handleSync} disabled>
+              <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> {syncing ? 'Syncing...' : 'Sync Partners'}
+            </Button>
+          )}
+          {canWrite && <Button onClick={() => { resetForm(); setShowForm(true); }}><PlusIcon className="w-4 h-4" /> {T.partners.new}</Button>}
         </div>
       </div>
 
@@ -207,12 +211,16 @@ export default function PartnersList() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
-                          <Button variant="ghost" size="sm" onClick={() => openEdit(partner)}>
-                            <PencilSquareIcon className="w-4 h-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(partner)}>
-                            <TrashIcon className="w-4 h-4 text-red-400" />
-                          </Button>
+                          {canWrite && (
+                            <Button variant="ghost" size="sm" onClick={() => openEdit(partner)}>
+                              <PencilSquareIcon className="w-4 h-4" />
+                            </Button>
+                          )}
+                          {canWrite && (
+                            <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(partner)}>
+                              <TrashIcon className="w-4 h-4 text-red-400" />
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>

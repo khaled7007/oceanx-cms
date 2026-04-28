@@ -9,6 +9,7 @@ import Pagination from '../../components/ui/Pagination';
 import { ConfirmModal } from '../../components/ui/Modal';
 import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
+import { usePermissions } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow, format } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
@@ -17,6 +18,7 @@ import { syncArticlesFromFolder } from '../../services/syncArticles';
 export default function ArticlesList() {
   const qc = useQueryClient();
   const { T, lang } = useLang();
+  const { canWrite, canSync } = usePermissions();
   const isAr = lang === 'ar';
   const locale = isAr ? ar : enUS;
   const [page, setPage] = useState(1);
@@ -81,11 +83,13 @@ export default function ArticlesList() {
           </select>
         </div>
         <div className="flex gap-2 items-center">
-          {syncStatus && <span className="text-xs text-gray-500 animate-pulse">{syncStatus}</span>}
-          <Button variant="secondary" onClick={handleSync} disabled>
-            <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> Sync Articles
-          </Button>
-          <Link to="/articles/new"><Button><PlusIcon className="w-4 h-4" /> {T.articles.new}</Button></Link>
+          {canSync && syncStatus && <span className="text-xs text-gray-500 animate-pulse">{syncStatus}</span>}
+          {canSync && (
+            <Button variant="secondary" onClick={handleSync} disabled>
+              <ArrowPathIcon className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} /> Sync Articles
+            </Button>
+          )}
+          {canWrite && <Link to="/articles/new"><Button><PlusIcon className="w-4 h-4" /> {T.articles.new}</Button></Link>}
         </div>
       </div>
 
@@ -125,15 +129,15 @@ export default function ArticlesList() {
                       <td className="px-4 py-3 text-gray-600 text-xs">
                         {article.date ? format(new Date(article.date), 'MMM d, yyyy') : '—'}
                       </td>
-                      <td className="px-4 py-3"><button onClick={() => toggleMutation.mutate(article.id)}><StatusBadge status={article.status} /></button></td>
+                      <td className="px-4 py-3">{canWrite ? <button onClick={() => toggleMutation.mutate(article.id)}><StatusBadge status={article.status} /></button> : <StatusBadge status={article.status} />}</td>
                       <td className="px-4 py-3">{article.featured && <Badge variant="info">★</Badge>}</td>
                       <td className="px-4 py-3 text-gray-400 text-xs">
                         {formatDistanceToNow(new Date(article.updated_at), { addSuffix: true, locale })}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
-                          <Link to={`/articles/${article.id}/edit`}><Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button></Link>
-                          <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(article)}><TrashIcon className="w-4 h-4 text-red-400" /></Button>
+                          {canWrite && <Link to={`/articles/${article.id}/edit`}><Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button></Link>}
+                          {canWrite && <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(article)}><TrashIcon className="w-4 h-4 text-red-400" /></Button>}
                         </div>
                       </td>
                     </tr>

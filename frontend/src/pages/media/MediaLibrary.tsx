@@ -7,6 +7,7 @@ import { ConfirmModal } from '../../components/ui/Modal';
 import Pagination from '../../components/ui/Pagination';
 import { CloudArrowUpIcon, TrashIcon, ClipboardDocumentIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
+import { usePermissions } from '../../contexts/AuthContext';
 import { uploadFile } from '../../services/storage.service';
 import toast from 'react-hot-toast';
 import { formatDistanceToNow } from 'date-fns';
@@ -15,6 +16,7 @@ import { ar, enUS } from 'date-fns/locale';
 export default function MediaLibrary() {
   const qc = useQueryClient();
   const { T, lang } = useLang();
+  const { canWrite } = usePermissions();
   const locale = lang === 'ar' ? ar : enUS;
   const [page, setPage] = useState(1);
   const [sourceFilter, setSourceFilter] = useState('');
@@ -59,16 +61,18 @@ export default function MediaLibrary() {
   return (
     <div className="space-y-4">
       {/* Upload zone */}
-      <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}
-        className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-brand-400 transition-colors cursor-pointer"
-        onClick={() => document.getElementById('bulk-upload')?.click()}>
-        <input id="bulk-upload" type="file" multiple accept="image/*" className="hidden"
-          onChange={(e) => handleUpload(e.target.files)} />
-        <CloudArrowUpIcon className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-        <p className="text-sm text-gray-500 font-medium">{T.media.drop_hint}</p>
-        <p className="text-xs text-gray-400 mt-1">{T.media.drop_sub}</p>
-        {uploading && <p className="text-xs text-brand-500 mt-2 animate-pulse">{T.common.uploading}</p>}
-      </div>
+      {canWrite && (
+        <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}
+          className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-brand-400 transition-colors cursor-pointer"
+          onClick={() => document.getElementById('bulk-upload')?.click()}>
+          <input id="bulk-upload" type="file" multiple accept="image/*" className="hidden"
+            onChange={(e) => handleUpload(e.target.files)} />
+          <CloudArrowUpIcon className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+          <p className="text-sm text-gray-500 font-medium">{T.media.drop_hint}</p>
+          <p className="text-xs text-gray-400 mt-1">{T.media.drop_sub}</p>
+          {uploading && <p className="text-xs text-brand-500 mt-2 animate-pulse">{T.common.uploading}</p>}
+        </div>
+      )}
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
@@ -119,13 +123,17 @@ export default function MediaLibrary() {
                   <button onClick={() => copyUrl(item.img)} className="p-2 bg-white rounded-lg text-gray-700 hover:bg-gray-100" title={T.common.copy_url}>
                     <ClipboardDocumentIcon className="w-4 h-4" />
                   </button>
-                  <button onClick={() => toggleVisibleMutation.mutate({ id: item.id, visible: !item.visible })}
-                    className="p-2 bg-white rounded-lg text-gray-700 hover:bg-gray-100" title={item.visible ? T.media.hide : T.media.show}>
-                    {item.visible ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
-                  </button>
-                  <button onClick={() => setDeleteTarget(item)} className="p-2 bg-red-500 rounded-lg text-white hover:bg-red-600">
-                    <TrashIcon className="w-4 h-4" />
-                  </button>
+                  {canWrite && (
+                    <button onClick={() => toggleVisibleMutation.mutate({ id: item.id, visible: !item.visible })}
+                      className="p-2 bg-white rounded-lg text-gray-700 hover:bg-gray-100" title={item.visible ? T.media.hide : T.media.show}>
+                      {item.visible ? <EyeSlashIcon className="w-4 h-4" /> : <EyeIcon className="w-4 h-4" />}
+                    </button>
+                  )}
+                  {canWrite && (
+                    <button onClick={() => setDeleteTarget(item)} className="p-2 bg-red-500 rounded-lg text-white hover:bg-red-600">
+                      <TrashIcon className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

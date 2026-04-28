@@ -1,5 +1,7 @@
 export type ContentStatus = 'draft' | 'published';
 
+export type UserRole = 'admin' | 'marketing' | 'hr' | 'user';
+
 export enum ReportStatus {
   Draft = 'draft',
   Published = 'published',
@@ -10,7 +12,15 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: string;
+  role: UserRole;
+}
+
+export interface UserRecord {
+  uid: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  createdAt?: any; // Firestore Timestamp or ISO string
 }
 
 export interface PaginationMeta {
@@ -198,4 +208,27 @@ export interface Analytics {
   partners: number;
   sectors_served: number;
   years_of_experience: number;
+}
+
+export type ApplicationType =
+  | 'cooperative_training'
+  | 'open_application'
+  | 'cv_submission'
+  | 'leadership_program';
+
+export type ApplicationGender = 'M' | 'F';
+
+export interface Application {
+  id: string;
+  name: Bilingual;
+  specialization: string;
+  dob: string;
+  email: string;
+  phone: string;
+  experience: string;
+  cv?: string;
+  links?: string;
+  gender: ApplicationGender;
+  type: ApplicationType;
+  created_at: string;
 }

@@ -11,13 +11,21 @@ import {
   BuildingOffice2Icon,
   TagIcon,
   ChartBarIcon,
+  UsersIcon,
+  ClipboardDocumentListIcon,
 } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
+import { usePermissions, useAuth } from '../../contexts/AuthContext';
 
 export default function Sidebar() {
   const { T } = useLang();
+  const { isAdmin, canManageApplies } = usePermissions();
+  const { user } = useAuth();
+  const isHr = user?.role === 'hr';
 
-  const navItems = [
+  const navItems = isHr
+    ? [{ to: '/applies', label: T.nav.applies, icon: ClipboardDocumentListIcon }]
+    : [
     { to: '/dashboard', label: T.nav.dashboard,  icon: HomeIcon },
     { to: '/reports',   label: T.nav.reports,    icon: DocumentTextIcon },
     { to: '/articles',  label: T.nav.articles,   icon: NewspaperIcon },
@@ -29,6 +37,8 @@ export default function Sidebar() {
     { to: '/partners',  label: T.nav.partners,   icon: BuildingOffice2Icon },
     { to: '/categories', label: T.nav.categories, icon: TagIcon },
     { to: '/analytics', label: T.nav.analytics, icon: ChartBarIcon },
+    ...(canManageApplies ? [{ to: '/applies', label: T.nav.applies, icon: ClipboardDocumentListIcon }] : []),
+    ...(isAdmin ? [{ to: '/users', label: T.nav.users, icon: UsersIcon }] : []),
   ];
 
   return (

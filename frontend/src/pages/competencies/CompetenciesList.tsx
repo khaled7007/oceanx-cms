@@ -9,11 +9,13 @@ import Pagination from '../../components/ui/Pagination';
 import { ConfirmModal } from '../../components/ui/Modal';
 import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
+import { usePermissions } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 export default function CompetenciesList() {
   const qc = useQueryClient();
   const { T, lang } = useLang();
+  const { canWrite } = usePermissions();
   const isAr = lang === 'ar';
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -39,7 +41,7 @@ export default function CompetenciesList() {
             placeholder={T.competencies.search}
             className="ps-9 pe-3 py-2 text-sm border border-gray-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-brand-500" />
         </div>
-        <Link to="/competencies/new"><Button><PlusIcon className="w-4 h-4" /> {T.competencies.new}</Button></Link>
+        {canWrite && <Link to="/competencies/new"><Button><PlusIcon className="w-4 h-4" /> {T.competencies.new}</Button></Link>}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -78,8 +80,8 @@ export default function CompetenciesList() {
                       <td className="px-4 py-3 text-gray-600" dir={isAr ? 'rtl' : undefined}>{isAr ? (item.department?.ar || item.department?.en || '—') : (item.department?.en || '—')}</td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
-                          <Link to={`/competencies/${item.id}/edit`}><Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button></Link>
-                          <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(item)}><TrashIcon className="w-4 h-4 text-red-400" /></Button>
+                          {canWrite && <Link to={`/competencies/${item.id}/edit`}><Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button></Link>}
+                          {canWrite && <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(item)}><TrashIcon className="w-4 h-4 text-red-400" /></Button>}
                         </div>
                       </td>
                     </tr>

@@ -22,6 +22,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     '/news/new':     `${T.common.new} ${T.nav.news.replace(/s$/, '')}`,
     '/competencies':     T.nav.competencies,
     '/competencies/new': `${T.common.new} ${T.nav.competencies}`,
+    '/users':            T.nav.users,
+    '/applies':          T.nav.applies,
   };
 
   function getTitle(pathname: string) {

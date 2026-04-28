@@ -9,11 +9,13 @@ import Pagination from '../../components/ui/Pagination';
 import { ConfirmModal } from '../../components/ui/Modal';
 import { PlusIcon, MagnifyingGlassIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useLang } from '../../contexts/LanguageContext';
+import { usePermissions } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 export default function ServicesList() {
   const qc = useQueryClient();
   const { T, lang } = useLang();
+  const { canWrite } = usePermissions();
   const isAr = lang === 'ar';
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -44,7 +46,7 @@ export default function ServicesList() {
             placeholder={T.services.search}
             className="ps-9 pe-3 py-2 text-sm border border-gray-200 rounded-lg w-56 focus:outline-none focus:ring-2 focus:ring-brand-500" />
         </div>
-        <Link to="/services/new"><Button><PlusIcon className="w-4 h-4" /> {T.services.new}</Button></Link>
+        {canWrite && <Link to="/services/new"><Button><PlusIcon className="w-4 h-4" /> {T.services.new}</Button></Link>}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -73,16 +75,22 @@ export default function ServicesList() {
                         {service.img ? <img src={service.img} alt="" className="w-8 h-8 object-contain" /> : <span className="text-gray-300 text-xs">—</span>}
                       </td>
                       <td className="px-4 py-3">
-                        <button onClick={() => toggleMutation.mutate(service.id)}>
+                        {canWrite ? (
+                          <button onClick={() => toggleMutation.mutate(service.id)}>
+                            <Badge variant={service.active ? 'success' : 'default'}>
+                              {service.active ? T.services.active : T.services.inactive}
+                            </Badge>
+                          </button>
+                        ) : (
                           <Badge variant={service.active ? 'success' : 'default'}>
                             {service.active ? T.services.active : T.services.inactive}
                           </Badge>
-                        </button>
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
-                          <Link to={`/services/${service.id}/edit`}><Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button></Link>
-                          <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(service)}><TrashIcon className="w-4 h-4 text-red-400" /></Button>
+                          {canWrite && <Link to={`/services/${service.id}/edit`}><Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button></Link>}
+                          {canWrite && <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(service)}><TrashIcon className="w-4 h-4 text-red-400" /></Button>}
                         </div>
                       </td>
                     </tr>
