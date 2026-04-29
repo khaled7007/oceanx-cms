@@ -83,6 +83,13 @@ const t = {
       featured_sub: (p: string, f: string) => `${p} published · ${f} featured`,
       active_sub: (a: string) => `${a} active`,
       size_sub: (s: string) => `${s} used`,
+      contact_info: 'Contact Information',
+      contact_email: 'Email',
+      contact_phone: 'Phone',
+      contact_working_hours_en: 'Working Hours (English)',
+      contact_working_hours_ar: 'Working Hours (Arabic)',
+      contact_save: 'Save',
+      contact_saved: 'Contact information saved',
     },
 
     // ── Reports ─────────────────────────────────────────────
@@ -255,6 +262,9 @@ const t = {
       update: 'Update Competency',
       back: 'Back to Competencies',
       details: 'Competency Details',
+      enabled: 'Enabled',
+      enabled_label: 'Enabled',
+      disabled_label: 'Disabled',
     },
 
     // ── Partners ────────────────────────────────────────────
@@ -409,6 +419,13 @@ const t = {
       featured_sub: (p: string, f: string) => `${p} منشور · ${f} مميز`,
       active_sub: (a: string) => `${a} نشط`,
       size_sub: (s: string) => `${s} مستخدم`,
+      contact_info: 'معلومات التواصل',
+      contact_email: 'البريد الإلكتروني',
+      contact_phone: 'رقم الهاتف',
+      contact_working_hours_en: 'ساعات العمل (إنجليزي)',
+      contact_working_hours_ar: 'ساعات العمل (عربي)',
+      contact_save: 'حفظ',
+      contact_saved: 'تم حفظ معلومات التواصل',
     },
 
     reports: {
@@ -575,6 +592,9 @@ const t = {
       update: 'تحديث الكفاءة',
       back: 'رجوع للكفاءات',
       details: 'تفاصيل الكفاءة',
+      enabled: 'مفعّل',
+      enabled_label: 'مفعّل',
+      disabled_label: 'معطّل',
     },
 
     // ── Partners ────────────────────────────────────────────

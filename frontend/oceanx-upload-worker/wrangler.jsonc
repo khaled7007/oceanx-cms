@@ -22,7 +22,7 @@
 	],
 	"vars": {
 		"PUBLIC_URL": "https://oceanx-media.com",
-		"ALLOWED_ORIGIN": "https://oceanx-backend-dev.web.app",
+		"ALLOWED_ORIGIN": "https://cms.oceanx.sa",
 		"FIREBASE_PROJECT_ID": "oceanx-backend-dev"
 	}
 }

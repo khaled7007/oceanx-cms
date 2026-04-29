@@ -158,6 +158,7 @@ export interface Competency {
   years_of_experience?: number;
   sort_order?: number;
   linkedin_url?: string;
+  enabled: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -208,6 +209,12 @@ export interface Analytics {
   partners: number;
   sectors_served: number;
   years_of_experience: number;
+}
+
+export interface ContactInfo {
+  email: string;
+  phone: string;
+  working_hours: { en: string; ar: string };
 }
 
 export type ApplicationType =

@@ -15,7 +15,7 @@ const emptyCompetency: Partial<Competency> = {
   name: { en: '' }, position: { en: '' }, photo: '',
   category: CompetencyCategory.BoardOfDirectors,
   department: { en: '' }, overview: { en: '' },
-  experience: { en: [], ar: [] }, years_of_experience: 0, sort_order: 0, linkedin_url: '',
+  experience: { en: [], ar: [] }, years_of_experience: 0, sort_order: 0, linkedin_url: '', enabled: true,
 };
 
 export default function CompetencyForm() {
@@ -176,6 +176,20 @@ export default function CompetencyForm() {
               preview={form.photo} onClear={() => set('photo', '')} hint="JPG, PNG, WebP" />
             {uploadingPhoto && <p className="text-xs text-brand-500 animate-pulse">{T.common.uploading}</p>}
             <Input label={T.competencies.photo_url} value={form.photo || ''} onChange={(e) => set('photo', e.target.value)} placeholder={T.common.or_paste_url} />
+          </div>
+
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <label className="flex items-center justify-between cursor-pointer">
+              <span className="text-sm font-medium text-gray-700">{T.competencies.enabled}</span>
+              <button
+                type="button"
+                dir="ltr"
+                onClick={() => set('enabled', !form.enabled)}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${form.enabled !== false ? 'bg-brand-500' : 'bg-gray-200'}`}
+              >
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${form.enabled !== false ? 'translate-x-6' : 'translate-x-1'}`} />
+              </button>
+            </label>
           </div>
 
           <div className="flex gap-2">

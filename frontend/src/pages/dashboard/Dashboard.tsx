@@ -1,10 +1,17 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { dashboardApi } from '../../api/dashboard';
+import { contactInfoApi } from '../../api/analytics';
+import { ContactInfo } from '../../types';
 import { formatDistanceToNow } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import { StatusBadge } from '../../components/ui/Badge';
 import { Link } from 'react-router-dom';
 import { useLang } from '../../contexts/LanguageContext';
+import { usePermissions } from '../../contexts/AuthContext';
+import Button from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
+import toast from 'react-hot-toast';
 
 interface StatCardProps {
   label: string;
@@ -27,11 +34,33 @@ function StatCard({ label, value, sub, color, to }: StatCardProps) {
 export default function Dashboard() {
   const { T, lang } = useLang();
   const locale = lang === 'ar' ? ar : enUS;
+  const qc = useQueryClient();
+  const { canWrite } = usePermissions();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: () => dashboardApi.getStats().then((r) => r.data),
   });
+
+  // ── Contact Information ──────────────────────────────────
+  const contactDefaults: ContactInfo = { email: '', phone: '', working_hours: { en: '', ar: '' } };
+  const [contactForm, setContactForm] = useState<ContactInfo>(contactDefaults);
+
+  const { data: contactData } = useQuery({
+    queryKey: ['contact-info'],
+    queryFn: () => contactInfoApi.get().then((r) => r.data),
+  });
+
+  useEffect(() => { if (contactData) setContactForm(contactData); }, [contactData]);
+
+  const contactMutation = useMutation({
+    mutationFn: (dto: ContactInfo) => contactInfoApi.save(dto),
+    onSuccess: () => { toast.success(T.dashboard.contact_saved); qc.invalidateQueries({ queryKey: ['contact-info'] }); },
+    onError: () => toast.error('!'),
+  });
+
+  const setContact = (field: keyof ContactInfo, value: unknown) =>
+    setContactForm((f) => ({ ...f, [field]: value }));
 
   if (isLoading) {
     return (
@@ -108,6 +137,55 @@ export default function Dashboard() {
                </tbody>
             </table>
           )}
+        </div>
+      </div>
+
+      {/* Contact Information */}
+      <div>
+        <h2 className="text-base font-semibold text-gray-700 mb-3">{T.dashboard.contact_info}</h2>
+        <div className="bg-white rounded-xl shadow-sm p-5">
+          <form
+            onSubmit={(e) => { e.preventDefault(); contactMutation.mutate(contactForm); }}
+            className="space-y-4"
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                label={T.dashboard.contact_email}
+                type="email"
+                value={contactForm.email}
+                onChange={(e) => setContact('email', e.target.value)}
+                disabled={!canWrite}
+              />
+              <Input
+                label={T.dashboard.contact_phone}
+                value={contactForm.phone}
+                onChange={(e) => setContact('phone', e.target.value)}
+                disabled={!canWrite}
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                label={T.dashboard.contact_working_hours_en}
+                value={contactForm.working_hours.en}
+                onChange={(e) => setContact('working_hours', { ...contactForm.working_hours, en: e.target.value })}
+                disabled={!canWrite}
+              />
+              <Input
+                label={T.dashboard.contact_working_hours_ar}
+                value={contactForm.working_hours.ar}
+                onChange={(e) => setContact('working_hours', { ...contactForm.working_hours, ar: e.target.value })}
+                dir="rtl"
+                disabled={!canWrite}
+              />
+            </div>
+            {canWrite && (
+              <div className="flex justify-end">
+                <Button type="submit" loading={contactMutation.isPending}>
+                  {T.dashboard.contact_save}
+                </Button>
+              </div>
+            )}
+          </form>
         </div>
       </div>
     </div>

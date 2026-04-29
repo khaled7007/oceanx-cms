@@ -1,8 +1,9 @@
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { Analytics } from '../types';
+import { Analytics, ContactInfo } from '../types';
 
 const DOC_REF = doc(db, 'analytics', 'stats');
+const CONTACT_DOC_REF = doc(db, 'analytics', 'contact_information');
 
 const defaults: Analytics = {
   projects_delivered: 0,
@@ -28,6 +29,34 @@ export const analyticsService = {
 
   async save(data: Analytics): Promise<Analytics> {
     await setDoc(DOC_REF, { ...data, updated_at: serverTimestamp() }, { merge: true });
+    return data;
+  },
+};
+
+const contactDefaults: ContactInfo = {
+  email: '',
+  phone: '',
+  working_hours: { en: '', ar: '' },
+};
+
+export const contactInfoService = {
+  async get(): Promise<ContactInfo> {
+    const snap = await getDoc(CONTACT_DOC_REF);
+    if (!snap.exists()) return { ...contactDefaults };
+    const d = snap.data() as Record<string, unknown>;
+    const wh = (d.working_hours ?? {}) as Record<string, unknown>;
+    return {
+      email: (d.email as string) ?? '',
+      phone: (d.phone as string) ?? '',
+      working_hours: {
+        en: (wh.en as string) ?? '',
+        ar: (wh.ar as string) ?? '',
+      },
+    };
+  },
+
+  async save(data: ContactInfo): Promise<ContactInfo> {
+    await setDoc(CONTACT_DOC_REF, { ...data, updated_at: serverTimestamp() }, { merge: true });
     return data;
   },
 };

@@ -57,6 +57,7 @@ export default function CompetenciesList() {
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.competencies.position}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.competencies.category}</th>
                     <th className="px-4 py-3 text-start font-medium text-gray-500">{T.competencies.department}</th>
+                    <th className="px-4 py-3 text-start font-medium text-gray-500">{T.competencies.enabled}</th>
                     <th className="px-4 py-3 text-end font-medium text-gray-500">{T.common.actions}</th>
                   </tr>
                 </thead>
@@ -78,6 +79,11 @@ export default function CompetenciesList() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-gray-600" dir={isAr ? 'rtl' : undefined}>{isAr ? (item.department?.ar || item.department?.en || '—') : (item.department?.en || '—')}</td>
+                      <td className="px-4 py-3">
+                        <Badge variant={item.enabled ? 'success' : 'default'}>
+                          {item.enabled ? T.competencies.enabled_label : T.competencies.disabled_label}
+                        </Badge>
+                      </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
                           {canWrite && <Link to={`/competencies/${item.id}/edit`}><Button variant="ghost" size="sm"><PencilSquareIcon className="w-4 h-4" /></Button></Link>}

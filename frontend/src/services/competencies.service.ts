@@ -64,6 +64,7 @@ function toCompetency(id: string, data: Record<string, unknown>): Competency {
     years_of_experience: (data.years_of_experience as number) ?? undefined,
     sort_order: (data.sort_order as number) ?? 0,
     linkedin_url: data.linkedin_url as string | undefined,
+    enabled: (data.enabled as boolean) ?? true,
     created_at: toISO(data.created_at),
     updated_at: toISO(data.updated_at),
   };
